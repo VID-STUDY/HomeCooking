@@ -77,26 +77,3 @@ def get_limit_delivery_price() -> int:
     settings.close()
     return value
 
-
-def get_trello_settings() -> Optional[Tuple[str, str]]:
-    """
-    Get Trello settings: board name and list name
-    :return: (board name, list name)
-    """
-    settings = shelve.open(filename)
-    if 'trello_settings' not in settings:
-        return None
-    value = settings['trello_settings']
-    settings.close()
-    return value
-
-
-def set_trello_settings(trello_settings: Tuple[str, str]):
-    """
-    Set Trello configurations
-    :param settings: Tuple of (board name, list name)
-    :return: void
-    """
-    settings = shelve.open(filename)
-    settings['trello_settings'] = trello_settings
-    settings.close()

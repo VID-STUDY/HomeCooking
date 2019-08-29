@@ -4,7 +4,6 @@ from wtforms import StringField, SubmitField, TextAreaField, FileField, SelectFi
 from wtforms.validators import DataRequired, ValidationError, EqualTo
 from flask_wtf.file import FileAllowed
 from application.core.models import Dish, DishCategory
-from application import trello_client
 import settings
 from flask_login import current_user
 
@@ -115,39 +114,3 @@ class CafeLocationForm(FlaskForm):
         coordinates = settings.get_cafe_coordinates()
         self.latitude.data = coordinates[0]
         self.longitude.data = coordinates[1]
-
-
-class TrelloSettingsForm(FlaskForm):
-    board_name = StringField('Название доски', validators=[DataRequired('Укажите название доски Trello')])
-    list_name = StringField('Название списка', validators=[DataRequired('Укажите название списка Trello')])
-    submit = SubmitField('Сохранить')
-
-    def validate_board_name(self, field):
-        if field.data == '':
-            return
-        all_boards = trello_client.list_boards(board_filter='open')
-        try:
-            list(filter(lambda b: b.name == field.data, all_boards))[0]
-        except IndexError:
-            raise ValidationError('Указанной доски не существует среди открытых')
-
-    def validate_list_name(self, field):
-        if self.board_name.data == '' or field.data == '':
-            return
-        all_boards = trello_client.list_boards(board_filter='open')
-        try:
-            board = list(filter(lambda b: b.name == self.board_name.data, all_boards))[0]
-        except IndexError:
-            return
-        all_lists = board.open_lists()
-        try:
-            list(filter(lambda l: l.name == field.data, all_lists))[0]
-        except IndexError:
-            raise ValidationError('Указанного списка не существует среди открытых в доске %s' % board.name)
-
-    def fill_from_settings(self):
-        current_trello_settings = settings.get_trello_settings()
-        if not current_trello_settings:
-            return
-        self.board_name.data = current_trello_settings[0]
-        self.list_name.data = current_trello_settings[1]

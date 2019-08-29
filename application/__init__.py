@@ -5,15 +5,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from telebot import TeleBot, logger
-from trello import TrelloClient
 import os
 import logging
 
 telegram_bot = TeleBot(Config.API_TOKEN, threaded=False)
-trello_client = TrelloClient(
-    api_key=Config.TRELLO_API_KEY,
-    token=Config.TRELLO_TOKEN
-)
 
 app = Flask(__name__)
 app.config.from_object(Config)

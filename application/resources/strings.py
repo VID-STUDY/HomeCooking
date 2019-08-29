@@ -129,7 +129,6 @@ def from_order(order: Order, language: str, total: int) -> str:
 
 
 def from_order_notification(order: Order, total_sum):
-    order_content = ''
     order_content = "<b>Новый заказ! #{}</b>".format(order.id)
     order_content += '\n\n'
     order_content += '<b>Номер телефона:</b> {}\n'.format(order.phone_number)
@@ -174,49 +173,3 @@ def from_comment_notification(comment: Comment):
         comment_content += '\n'
     comment_content += comment.text
     return comment_content
-
-
-def from_order_trello_card(order: Order):
-    order_content = ''
-    order_content += 'Номер телефона: {}\n'.format(order.phone_number)
-    order_content += 'Имя покупателя: {}\n'.format(order.user_name)
-    order_content += 'Способ оплаты: {}\n'.format(from_order_payment_method(order.payment_method, 'ru'))
-    order_content += '\n'
-    order_item_tmpl = '{name}\n{count} x {price} = {sum} сум\n'
-    order_items = order.order_items.all()
-    grouped_order_items = {}
-    categories_list = [oi.dish.category for oi in order_items]
-    categories_list = list(set(categories_list))
-    for category in categories_list:
-        order_items_by_category = list(filter(lambda oi: oi.dish.category_id == category.id, order_items))
-        grouped_order_items[category.name] = order_items_by_category
-    for category, ois in grouped_order_items.items():
-        group_content = '%s:\n' % category
-        for order_item in ois:
-            group_content += order_item_tmpl.format(name=order_item.dish.name,
-                                                    count=order_item.count,
-                                                    price=_format_number(order_item.dish.price),
-                                                    sum=_format_number(order_item.dish.price * order_item.count))
-        order_content += group_content
-    order_content += "Общая стоимость заказа: {} сум".format(_format_number(order.total_amount))
-    if order.delivery_price:
-        order_content += '\n\n'
-        order_content += 'Стоимость доставки: {} сум'.format(_format_number(order.delivery_price))
-    if order.location:
-        order_content += '\n\n'
-        order_content += 'Локация: https://www.google.com/maps/search/?api=1&query={lat},{long}'.format(lat=order.location.latitude,
-                                                                                    long=order.location.longitude)
-    return order_content
-
-
-def from_order_to_trello_card_desc(order: Order):
-    order_content = ""
-    if order.address_txt:
-        order_content += 'Адрес: {}'.format(order.address_txt)
-    elif order.location:
-        order_content += 'Адрес: {}'.format(order.location.address)
-    if order.location:
-        order_content += '\n\n'
-        order_content += 'Локация: https://www.google.com/maps/search/?api=1&query={lat},{long}'.format(lat=order.location.latitude,
-                                                                                    long=order.location.longitude)
-    return order_content

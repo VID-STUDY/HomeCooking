@@ -1,5 +1,5 @@
 from application import telegram_bot as bot
-from application.core import orderservice, userservice, trelloservice
+from application.core import orderservice, userservice
 from application.resources import strings, keyboards
 from telebot.types import Message
 from .catalog import back_to_the_catalog
@@ -209,7 +209,6 @@ def confirmation_processor(message: Message, **kwargs):
         order_success_message = strings.get_string('order.success', language)
         back_to_the_catalog(chat_id, language, order_success_message)
         notify_new_order(order, total)
-        trelloservice.add_order_to_trello_board(order)
     elif strings.get_string('order.cancel', language) in message.text:
         order_canceled_message = strings.get_string('order.canceled', language)
         back_to_the_catalog(chat_id, language, order_canceled_message)

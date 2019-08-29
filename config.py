@@ -17,6 +17,3 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
-
-    TRELLO_API_KEY = os.environ.get('TRELLO_API_KEY')
-    TRELLO_TOKEN = os.getenv('TRELLO_TOKEN')
