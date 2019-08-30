@@ -1,7 +1,11 @@
 {% extends 'layouts/admin.html' %}
-{% block header %}Каталог товаров{% endblock %}
+{% block header %}{{ category.name }} | {{ category.name_uz }}{% endblock %}
 {% block breadcrumbs %}
-	<li class="active">Каталог</li>
+	<li><a href="{{ url_for('admin.catalog') }}">Каталог</a></li>
+    {% if category.parent %}
+        <a href="{{ url_for('admin.show_category', category_id=category.parent_id) }}">{{ category.parent.name }} | {{ category.parent.name_uz }}</a>
+    {% endif %}
+    <li class="active">{{ category.name }} | {{ category.name_uz }}</li>
 {% endblock %}
 {% block content %}
     <div class="row add-button">
@@ -18,7 +22,7 @@
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">Список категорий</h3>
+                    <h3 class="box-title">Дочериние категории</h3>
                 </div>
                 <div class="box-body table-responsive no-padding">
                     <table class="table table-hover">
@@ -32,31 +36,31 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for category in categories %}
+                            {% for child in categories %}
                                 <tr>
                                     <td>
-                                        <input type="number" class="number-counter" min="1" value="{{ category.number }}" data-api-url="{{ url_for('admin.set_category_number', category_id=category.id) }}">                                  
+                                        <input type="number" class="number-counter" min="1" value="{{ child.number }}" data-api-url="{{ url_for('admin.set_category_number', category_id=child.id) }}">                                  
                                     </td>
                                     <td>
-                                        {{ category.name }} | {{ category.name_uz }}
+                                        {{ child.name }} | {{ child.name_uz }}
                                     </td>
                                     <td>
-                                        {% if category.get_children().count() > 0 %}
-                                            <a href="{{ url_for('admin.show_category', category_id=category.id) }}">Показать</a>
+                                        {% if child.get_children().count() > 0 %}
+                                            <a href="{{ url_for('admin.show_category', category_id=child.id) }}">Показать</a>
                                         {% else %}
                                             Нет
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if category.dishes.count() > 0 %}
-                                            <a href="{{ url_for('admin.category_dishes', category_id=category.id) }}">Показать</a>
+                                        {% if child.dishes.count() > 0 %}
+                                            <a href="{{ url_for('admin.category_dishes', category_id=child.id) }}">Показать</a>
                                         {% else %}
                                             Нет
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{{ url_for('admin.edit_category', category_id=category.id) }}" class="btn btn-flat bg-orange"><i class="fas fa-edit"></i></a>
-                                        <a href="{{ url_for('admin.remove_category', category_id=category.id) }}" onclick="return confirm('Вы уверены?')" class="btn btn-danger btn-flat"><i class="fas fa-trash"></i></a>
+                                        <a href="{{ url_for('admin.edit_category', category_id=child.id) }}" class="btn btn-flat bg-orange"><i class="fas fa-edit"></i></a>
+                                        <a href="{{ url_for('admin.remove_category', category_id=child.id) }}" onclick="return confirm('Вы уверены?')" class="btn btn-danger btn-flat"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
                             {% endfor %}

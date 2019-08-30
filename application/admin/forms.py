@@ -11,11 +11,14 @@ from flask_login import current_user
 class CategoryForm(FlaskForm):
     name_ru = StringField('Название на русском', validators=[DataRequired('Укажите название категории на русском')])
     name_uz = StringField('Название на узбекском', validators=[DataRequired('Укажите название категории на узбексокм')])
+    parent = SelectField('Родительская категория', coerce=int)
     submit = SubmitField('Сохранить')
 
     def fill_from_object(self, category: DishCategory):
         self.name_ru.data = category.name
         self.name_uz.data = category.name_uz
+        if category.parent:
+            self.parent = category.parent_id
 
 
 class DishForm(FlaskForm):
