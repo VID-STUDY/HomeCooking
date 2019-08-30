@@ -1,6 +1,7 @@
 from application import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from sqlalchemy_mptt.mixins import BaseNestedSets
 
 
 class CartItem(db.Model):
@@ -94,7 +95,7 @@ class UserAdmin(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
 
 
-class DishCategory(db.Model):
+class DishCategory(db.Model, BaseNestedSets):
     """
     Model for dish category
     """
