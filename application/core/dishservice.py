@@ -1,7 +1,7 @@
 from application import db
 from application.core.models import Dish, DishCategory, CartItem
 from application.core import exceptions
-from typing import List
+from typing import List, Optional
 from application.utils import files
 import os
 from config import Config
@@ -110,6 +110,13 @@ def set_category_number(category_id, number):
 
 def get_dish_by_id(dish_id: int):
     return Dish.query.get_or_404(dish_id)
+
+
+def get_category_by_name(name: str, language: str) -> Optional[DishCategory]:
+    if language == 'uz':
+        return DishCategory.query.filter(DishCategory.name_uz == name).first()
+    else:
+        return DishCategory.query.filter(DishCategory.name == name).first()
 
 
 def get_dishes_by_category_name(name: str, language: str, sort_by_number: bool = False, include_hidden=False) -> list:
