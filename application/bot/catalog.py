@@ -121,16 +121,27 @@ def catalog_processor(message: Message):
     elif strings.get_string('catalog.make_order', language) in message.text:
         orders.order_processor(message)
     else:
-        try:
-            category_name = message.text
-            dishes = dishservice.get_dishes_by_category_name(category_name, language, sort_by_number=True)
-        except exceptions.CategoryNotFoundError:
+        category_name = message.text
+        category = dishservice.get_category_by_name(category_name, language)
+        if not category:
             error()
             return
-        dish_message = strings.get_string('catalog.choose_dish', language)
-        dishes_keyboard = keyboards.from_dishes(dishes, language)
-        bot.send_message(chat_id, dish_message, reply_markup=dishes_keyboard)
-        bot.register_next_step_handler_by_chat_id(chat_id, choose_dish_processor)
+        if category.get_children().count() > 0:
+            categories = category.get_children().all()
+            catalog_message = strings.from_category_name(category, language)
+            category_keyboard = keyboards.from_dish_categories(categories, language)
+            bot.send_message(chat_id, catalog_message, reply_markup=category_keyboard)
+            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
+        elif category.dishes.count() > 0:
+            dishes = dishservice.get_dishes_by_category_name(category_name, language, sort_by_number=True)
+            dish_message = strings.get_string('catalog.choose_dish', language)
+            dishes_keyboard = keyboards.from_dishes(dishes, language)
+            bot.send_message(chat_id, dish_message, reply_markup=dishes_keyboard)
+            bot.register_next_step_handler_by_chat_id(chat_id, choose_dish_processor)
+        else:
+            empty_message = strings.get_string('catalog.empty', language)
+            bot.send_message(chat_id, empty_message)
+            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
 
 
 @bot.message_handler(commands=['order'], func=botutils.check_auth)
@@ -141,7 +152,7 @@ def catalog(message: Message):
     language = userservice.get_user_language(user_id)
     bot.send_chat_action(chat_id, 'typing')
     catalog_message = strings.get_string('catalog.start', language)
-    categories = dishservice.get_all_categories(sort_by_number=True)
+    categories = dishservice.get_parent_categories(sort_by_number=True)
     if len(categories) == 0:
         empty_message = strings.get_string('catalog.empty', language)
         bot.send_message(chat_id, empty_message)

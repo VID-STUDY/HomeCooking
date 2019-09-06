@@ -173,3 +173,10 @@ def from_comment_notification(comment: Comment):
         comment_content += '\n'
     comment_content += comment.text
     return comment_content
+
+
+def from_category_name(category, language):
+    if language == 'uz':
+        return category.name_uz
+    else:
+        return category.name
