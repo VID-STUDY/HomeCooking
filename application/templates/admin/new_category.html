@@ -27,16 +27,16 @@
                                 <span class="help-block">{{ error }}</span>
                             {% endfor %}
                         </div>
-                        <div class="form-buttons">
-                            <a href="{{ url_for('admin.catalog') }}" class="back-button btn btn-flat bg-orange"><i class="fas fa-long-arrow-alt-left"></i>Назад</a>
-                            {{ form.submit(class='save-button btn btn-flat bg-orange') }}
-                        </div>
                         <div class="form-group {% if form.parent.errors %} has-error{% endif %}">
                             {{ form.parent.label }}
                             {{ form.parent(class='form-control') }}
                             {% for error in form.parent.errors %}
                                 <span class="help-block">{{ error }}</span>
                             {% endfor %}
+                        </div>
+                        <div class="form-buttons">
+                            <a href="{{ url_for('admin.catalog') }}" class="back-button btn btn-flat bg-orange"><i class="fas fa-long-arrow-alt-left"></i>Назад</a>
+                            {{ form.submit(class='save-button btn btn-flat bg-orange') }}
                         </div>
                     </form>
                 </div>
