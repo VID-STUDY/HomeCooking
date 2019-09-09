@@ -122,6 +122,7 @@ class CafeLocationForm(FlaskForm):
 class UserForm(FlaskForm):
     name = StringField('Имя пользователя', validators=[DataRequired("Укажите имя пользователя")])
     phone_number = StringField('Номер телефона', validators=[DataRequired("Укажите номер телефона")])
+    submit = SubmitField('Сохранить')
 
     def fill_from_object(self, user: User):
         self.name.data = user.full_user_name
