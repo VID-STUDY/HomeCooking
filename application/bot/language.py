@@ -9,7 +9,10 @@ def check_language(message: Message):
     if not message.text:
         return False
     user_id = message.from_user.id
-    language = userservice.get_user_language(user_id)
+    user = userservice.get_user_by_telegram_id(user_id)
+    if not user:
+        return False
+    language = user.language
     return strings.get_string('main_menu.language', language) in message.text and message.chat.type == 'private'
 
 
