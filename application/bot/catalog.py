@@ -17,13 +17,23 @@ def check_catalog(message: Message):
     return strings.get_string('main_menu.make_order', language) in message.text and 'private' in message.chat.type
 
 
-def back_to_the_catalog(chat_id, language, message_txt=None):
+def back_to_the_catalog(chat_id, language, message_txt=None, parent_category=None):
     bot.send_chat_action(chat_id, 'typing')
     if not message_txt:
         catalog_message = strings.get_string('catalog.start', language)
     else:
         catalog_message = message_txt
-    categories = dishservice.get_all_categories(sort_by_number=True)
+    if parent_category:
+        catalog_message = strings.from_category_name(parent_category, language)
+        categories = parent_category.get_siblings(include_self=True).all()
+        category_keyboard = keyboards.from_dish_categories(categories, language)
+        bot.send_message(chat_id, catalog_message, reply_markup=category_keyboard)
+        if parent_category.parent:
+            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor, parent_category = parent_category.parent)
+        else:
+            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
+        return
+    categories = dishservice.get_parent_categories(sort_by_number=True)
     category_keyboard = keyboards.from_dish_categories(categories, language)
     bot.send_message(chat_id, catalog_message, reply_markup=category_keyboard)
     bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
@@ -48,7 +58,7 @@ def dish_action_processor(message: Message):
         dish_message = strings.get_string('catalog.choose_dish', language)
         dishes_keyboard = keyboards.from_dishes(dishes, language)
         bot.send_message(chat_id, dish_message, reply_markup=dishes_keyboard)
-        bot.register_next_step_handler_by_chat_id(chat_id, choose_dish_processor)
+        bot.register_next_step_handler_by_chat_id(chat_id, choose_dish_processor, category=current_dish.category)
     elif strings.get_string('catalog.cart', language) in message.text:
         cart.cart_processor(message, dish_action_processor)
     else:
@@ -60,7 +70,7 @@ def dish_action_processor(message: Message):
         back_to_the_catalog(chat_id, language, continue_message)
 
 
-def choose_dish_processor(message: Message):
+def choose_dish_processor(message: Message, **kwargs):
     chat_id = message.chat.id
     user_id = message.from_user.id
     language = userservice.get_user_language(user_id)
@@ -74,6 +84,11 @@ def choose_dish_processor(message: Message):
         error()
         return
     if strings.get_string('go_back', language) in message.text:
+        if 'category' in kwargs:
+            category = kwargs.get('category')
+            catalog_message = strings.from_category_name(category, language)
+            back_to_the_catalog(chat_id, language, catalog_message, category)
+            return
         back_to_the_catalog(chat_id, language)
     elif strings.get_string('catalog.cart', language) in message.text:
         cart.cart_processor(message, choose_dish_processor)
@@ -104,7 +119,7 @@ def choose_dish_processor(message: Message):
         bot.register_next_step_handler_by_chat_id(chat_id, dish_action_processor)
 
 
-def catalog_processor(message: Message):
+def catalog_processor(message: Message, **kwargs):
     chat_id = message.chat.id
     user_id = message.from_user.id
     language = userservice.get_user_language(user_id)
@@ -118,7 +133,12 @@ def catalog_processor(message: Message):
         error()
         return
     if strings.get_string('go_back', language) in message.text:
-        botutils.to_main_menu(chat_id, language)
+        if 'parent_category' in kwargs:
+            parent_category = kwargs.get('parent_category')
+            catalog_message = strings.from_category_name(parent_category, language)
+            back_to_the_catalog(chat_id, language, catalog_message, parent_category)
+        else:
+            botutils.to_main_menu(chat_id, language)
     elif strings.get_string('catalog.cart', language) in message.text:
         cart.cart_processor(message)
     elif strings.get_string('catalog.make_order', language) in message.text:
@@ -134,17 +154,20 @@ def catalog_processor(message: Message):
             catalog_message = strings.from_category_name(category, language)
             category_keyboard = keyboards.from_dish_categories(categories, language)
             bot.send_message(chat_id, catalog_message, reply_markup=category_keyboard)
-            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
+            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor, parent_category=category)
         elif category.dishes.count() > 0:
             dishes = dishservice.get_dishes_by_category_name(category_name, language, sort_by_number=True)
             dish_message = strings.get_string('catalog.choose_dish', language)
             dishes_keyboard = keyboards.from_dishes(dishes, language)
             bot.send_message(chat_id, dish_message, reply_markup=dishes_keyboard)
-            bot.register_next_step_handler_by_chat_id(chat_id, choose_dish_processor)
+            bot.register_next_step_handler_by_chat_id(chat_id, choose_dish_processor, category=category)
         else:
             empty_message = strings.get_string('catalog.empty', language)
             bot.send_message(chat_id, empty_message)
-            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
+            if category.parent:
+                bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor, parent_category=category.parent)
+            else:
+                bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
 
 
 @bot.message_handler(commands=['order'], func=botutils.check_auth)
