@@ -7,7 +7,7 @@ import secrets
 
 
 def is_user_exists(user_id: int):
-    return User.query.get(user_id) is not None
+    return get_user_by_telegram_id(user_id) is not None
 
 
 def get_user_by_telegram_id(telegram_id: int):
@@ -45,7 +45,7 @@ def create_user(full_user_name: str, phone_number: str):
 
 
 def set_user_phone_number(user_id: int, phone_number: str):
-    user = User.query.get(user_id)
+    user = get_user_by_telegram_id(user_id)
     user.phone_number = phone_number
     db.session.commit()
 
@@ -54,10 +54,6 @@ def set_user_language(user_id: int, language: str):
     user = get_user_by_telegram_id(user_id)
     user.language = language
     db.session.commit()
-
-
-def get_user_by_id(user_id: int):
-    return User.query.get(user_id)
 
 
 def get_admin_user_by_email(email: str) -> UserAdmin:
@@ -69,14 +65,14 @@ def get_admin_user_by_id(user_id: int) -> UserAdmin:
 
 
 def is_user_registered(user_id):
-    user = User.query.get(user_id)
+    user = get_user_by_telegram_id(user_id)
     if user is None:
         return False
     return user.language is not None
 
 
 def get_user_language(user_id: int):
-    user = User.query.get(user_id)
+    user = get_user_by_telegram_id(user_id)
     return user.language
 
 
@@ -126,12 +122,12 @@ def get_current_user_dish(user_id: int):
 
 
 def get_user_cart(user_id: int) -> list:
-    user = get_user_by_id(user_id)
+    user = get_user_by_telegram_id(user_id)
     return user.cart.all()
 
 
 def clear_user_cart(user_id: int):
-    user = get_user_by_id(user_id)
+    user = get_user_by_telegram_id(user_id)
     dishes = [cart_item.dish for cart_item in user.cart.all()]
     for dish in dishes:
         user.remove_dish_from_cart(dish)
@@ -139,13 +135,13 @@ def clear_user_cart(user_id: int):
 
 
 def add_dish_to_cart(user_id: int, dish: Dish, count: int):
-    user = get_user_by_id(user_id)
+    user = get_user_by_telegram_id(user_id)
     user.add_dish_to_cart(dish, count)
     db.session.commit()
 
 
 def remove_dish_from_user_cart(user_id: int, dish_name: str, language: str) -> bool:
-    user = get_user_by_id(user_id)
+    user = get_user_by_telegram_id(user_id)
     dish = dishservice.get_dish_by_name(dish_name, language)
     if not dish:
         return False
