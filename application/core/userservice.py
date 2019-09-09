@@ -3,6 +3,7 @@ from application.core.models import User, UserAdmin, UserDish, Dish
 from application.utils import date
 from . import dishservice
 from datetime import datetime, timedelta
+import secrets
 
 
 def is_user_exists(user_id: int):
@@ -14,6 +15,15 @@ def register_user(user_id: int, username: str, full_user_name: str, phone_number
                 full_user_name=full_user_name, phone_number=phone_number)
     db.session.add(user)
     db.session.commit()
+
+
+def create_user(full_user_name: str, phone_number: str):
+    token = secrets.token_urlsafe(20)
+    user = User(token=token, registration_date=datetime.utcnow(),
+                full_user_name=full_user_name, phone_number=phone_number)
+    db.session.add(user)
+    db.session.commit()
+    return user
 
 
 def set_user_phone_number(user_id: int, phone_number: str):
