@@ -38,6 +38,7 @@ def process_phone_number(message: Message, **kwargs):
 
 def process_user_language(message: Message):
     chat_id = message.chat.id
+    user_id = message.from_user.id
 
     def error():
         error_msg = strings.get_string('welcome.say_me_language')
@@ -57,23 +58,43 @@ def process_user_language(message: Message):
     else:
         error()
         return
-    next_message = strings.get_string('welcome.phone_number', language)
-    phone_keyboard = keyboards.from_user_phone_number(language)
-    telegram_bot.send_message(chat_id, next_message, reply_markup=phone_keyboard, parse_mode='HTML')
-    telegram_bot.register_next_step_handler_by_chat_id(chat_id, process_phone_number, language=language)
+    userservice.set_user_language(user_id, language)
+    success_message = strings.get_string('welcome.registration_successfully', language)
+    botutils.to_main_menu(chat_id, language, success_message)
 
 
 @telegram_bot.message_handler(commands=['start'], func=lambda m: m.chat.type == 'private')
 def welcome(message):
-    chat_id = message.chat.id
     user_id = message.from_user.id
-    if userservice.is_user_registered(user_id):
-        language = userservice.get_user_language(user_id)
-        main_menu_message = strings.get_string('main_menu.choose_option', language)
-        main_menu_keyboard = keyboards.get_keyboard('main_menu', language)
-        telegram_bot.send_message(chat_id, main_menu_message, reply_markup=main_menu_keyboard)
+    chat_id = message.chat.id
+
+    def not_allowed():
+        not_allowed_message = strings.get_string('registration.not_allowed')
+        remove_keyboard = keyboards.get_keyboard('remove')
+        telegram_bot.send_message(chat_id, not_allowed_message, reply_markup=remove_keyboard)
+
+    current_user = userservice.get_user_by_telegram_id(user_id)
+    if current_user:
+        botutils.to_main_menu(chat_id, current_user.language)
         return
-    welcome_text = strings.get_string('welcome')
+    msg_text = message.text
+    message_text_parts = msg_text.split(' ')
+    try:
+        token = message_text_parts[1]
+    except IndexError:
+        not_allowed()
+        return
+    user = userservice.get_user_by_token(token)
+    if not user:
+        not_allowed()
+        return
+    confirmation_result = userservice.confirm_user(user, user_id, message.from_user.username)
+    if not confirmation_result:
+        not_allowed()
+        return
+    welcome_message = strings.get_string('registration.welcome').format(user.full_user_name)
+    telegram_bot.send_message(chat_id, welcome_message, parse_mode='HTML')
+    language_message = strings.get_string('welcome.say_me_language')
     language_keyboard = keyboards.get_keyboard('welcome.language')
-    msg = telegram_bot.send_message(chat_id, welcome_text, parse_mode='HTML', reply_markup=language_keyboard)
-    telegram_bot.register_next_step_handler(msg, process_user_language)
+    telegram_bot.send_message(chat_id, language_message, reply_markup=language_keyboard)
+    telegram_bot.register_next_step_handler_by_chat_id(chat_id, process_user_language)

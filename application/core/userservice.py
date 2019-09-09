@@ -10,6 +10,24 @@ def is_user_exists(user_id: int):
     return User.query.get(user_id) is not None
 
 
+def get_user_by_telegram_id(telegram_id: int):
+    return User.query.filter(User.telegram_id == telegram_id).first()
+
+
+def get_user_by_token(token: str):
+    return User.query.filter(User.token == token).first()
+
+
+def confirm_user(user: User, telegram_id, username: str):
+    if user.confirmed:
+        return False
+    user.telegram_id = telegram_id
+    user.confirmed = True
+    user.username = username
+    db.session.commit()
+    return True
+
+
 def register_user(user_id: int, username: str, full_user_name: str, phone_number: str, language: str):
     user = User(id=user_id, username=username, language=language, registration_date=datetime.utcnow(),
                 full_user_name=full_user_name, phone_number=phone_number)
@@ -33,7 +51,7 @@ def set_user_phone_number(user_id: int, phone_number: str):
 
 
 def set_user_language(user_id: int, language: str):
-    user = User.query.get(user_id)
+    user = get_user_by_telegram_id(user_id)
     user.language = language
     db.session.commit()
 
