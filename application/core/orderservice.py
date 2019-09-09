@@ -9,7 +9,7 @@ from typing import List
 
 
 def get_current_order_by_user(user_id: int) -> Order:
-    user = User.query.get(user_id)
+    user = userservice.get_user_by_telegram_id(user_id)
     return user.orders.filter(Order.confirmed != True).first()
 
 
@@ -54,7 +54,7 @@ def make_an_order(user_id: int):
     :param user_id: User's Telegram-ID
     :return: void
     """
-    user = User.query.get(user_id)
+    user = userservice.get_user_by_telegram_id(user_id)
     current_order = get_current_order_by_user(user_id)
     if not current_order:
         new_order = Order()
