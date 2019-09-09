@@ -10,6 +10,10 @@ def is_user_exists(user_id: int):
     return get_user_by_telegram_id(user_id) is not None
 
 
+def get_user_by_id(user_id):
+    return User.query.get_or_404(user_id)
+
+
 def get_user_by_telegram_id(telegram_id: int):
     return User.query.filter(User.telegram_id == telegram_id).first()
 
@@ -42,6 +46,17 @@ def create_user(full_user_name: str, phone_number: str):
     db.session.add(user)
     db.session.commit()
     return user
+
+
+def update_user(user_id, name, phone_number):
+    user = get_user_by_id(user_id)
+    user.full_user_name = name
+    user.phone_number = phone_number
+    db.session.commit()
+
+
+def remove_user(user_id):
+    db.session.delete(get_user_by_id(user_id))
 
 
 def set_user_phone_number(user_id: int, phone_number: str):

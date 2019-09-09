@@ -3,7 +3,7 @@ from wtforms import StringField, SubmitField, TextAreaField, FileField, SelectFi
     PasswordField, FloatField
 from wtforms.validators import DataRequired, ValidationError, EqualTo
 from flask_wtf.file import FileAllowed
-from application.core.models import Dish, DishCategory
+from application.core.models import Dish, DishCategory, User
 import settings
 from flask_login import current_user
 
@@ -117,3 +117,12 @@ class CafeLocationForm(FlaskForm):
         coordinates = settings.get_cafe_coordinates()
         self.latitude.data = coordinates[0]
         self.longitude.data = coordinates[1]
+
+
+class UserForm(FlaskForm):
+    name = StringField('Имя пользователя', validators=[DataRequired("Укажите имя пользователя")])
+    phone_number = StringField('Номер телефона', validators=[DataRequired("Укажите номер телефона")])
+
+    def fill_from_object(self, user: User):
+        self.name.data = user.full_user_name
+        self.phone_number = user.phone_number
