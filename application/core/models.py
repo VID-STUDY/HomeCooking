@@ -38,6 +38,7 @@ class User(db.Model):
     username = db.Column(db.String(100))
     phone_number = db.Column(db.String(15))
     language = db.Column(db.String(5))
+    token = db.Column(db.String(50))
     registration_date = db.Column(db.DateTime)
     cart = db.relationship('CartItem', lazy='dynamic', backref='user', cascade='all, delete-orphan')
     orders = db.relationship('Order', lazy='dynamic', backref='customer', cascade='all, delete-orphan')
