@@ -13,7 +13,7 @@ def users():
     return render_template('admin/users.html', title='Пользователи Telegram-bot', users=all_users, area='users')
 
 
-@bp.route('/users/create')
+@bp.route('/users/create', methods=['GET', 'POST'])
 @login_required
 def create_user():
     form = UserForm()
@@ -27,7 +27,7 @@ def create_user():
 
 @bp.route('/users/<int:user_id>/edit')
 @login_required
-def edit_user(user_id: int):
+def edit_user(user_id: int, methods=['GET', 'POST']):
     form = UserForm()
     if form.validate_on_submit():
         user_name = form.name.data
