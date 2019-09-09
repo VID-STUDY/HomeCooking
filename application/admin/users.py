@@ -3,6 +3,7 @@ from application.core import userservice
 from flask_login import login_required
 from flask import render_template, redirect, url_for, flash
 from .forms import UserForm
+from application import telegram_bot
 
 
 @bp.route('/users')
@@ -43,10 +44,11 @@ def edit_user(user_id: int):
 @login_required
 def user_created(user_id: int):
     user = userservice.get_user_by_id(user_id)
-    return render_template('admin/user_created.html', title=user.full_user_name, user=user, area='users')
+    return render_template('admin/user_created.html', title=user.full_user_name, user=user, area='users',
+                           bot_username=telegram_bot.get_me().username)
 
 
-@bp.route('/users/<int:user_id/remove')
+@bp.route('/users/<int:user_id>/remove')
 @login_required
 def remove_user(user_id):
     userservice.remove_user(user_id)
