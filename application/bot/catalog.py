@@ -121,6 +121,9 @@ def choose_dish_processor(message: Message, **kwargs):
 
 def catalog_processor(message: Message, **kwargs):
     chat_id = message.chat.id
+    if message.successful_payment:
+        bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
+        return
     user_id = message.from_user.id
     language = userservice.get_user_language(user_id)
 
