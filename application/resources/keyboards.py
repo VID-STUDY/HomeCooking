@@ -46,13 +46,16 @@ _keyboards_ru['order.address'] = _order_location_keyboard_ru
 
 _order_payment_keyboard_ru = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
 _order_payment_keyboard_ru.add(from_order_payment_method(Order.PaymentMethods.CASH, 'ru'),
-                               from_order_payment_method(Order.PaymentMethods.TERMINAL, 'ru'),
+                               from_order_payment_method(Order.PaymentMethods.PAYME, 'ru'),
                                get_string('go_back'), get_string('go_to_menu'))
 _keyboards_ru['order.payment'] = _order_payment_keyboard_ru
 
 _order_confirmation_keyboard_ru = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
 _order_confirmation_keyboard_ru.add(get_string('order.confirm'), get_string('order.cancel'))
 _keyboards_ru['order.confirmation'] = _order_confirmation_keyboard_ru
+_order_confirmation_payment_keyboard_ru = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+_order_confirmation_payment_keyboard_ru.add(get_string('order.cancel', 'ru'))
+_keyboards_ru['order.payment_confirmation'] = _order_confirmation_payment_keyboard_ru
 
 _comments_keyboard_ru = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
 _comments_keyboard_ru.add(*[get_string('comments.point_' + str(x)) for x in list(reversed(range(1, 6)))])
@@ -84,12 +87,15 @@ _order_location_keyboard_uz.add(get_string('go_back', 'uz'))
 _keyboards_uz['order.address'] = _order_location_keyboard_uz
 _order_payment_keyboard_uz = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
 _order_payment_keyboard_uz.add(from_order_payment_method(Order.PaymentMethods.CASH, 'uz'),
-                               from_order_payment_method(Order.PaymentMethods.TERMINAL, 'uz'),
+                               from_order_payment_method(Order.PaymentMethods.PAYME, 'uz'),
                                get_string('go_back', 'uz'), get_string('go_to_menu', 'uz'))
 _keyboards_uz['order.payment'] = _order_payment_keyboard_uz
 _order_confirmation_keyboard_uz = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
 _order_confirmation_keyboard_uz.add(get_string('order.confirm', 'uz'), get_string('order.cancel', 'uz'))
 _keyboards_uz['order.confirmation'] = _order_confirmation_keyboard_uz
+_order_confirmation_payment_keyboard_uz = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+_order_confirmation_payment_keyboard_uz.add(get_string('order.cancel', 'uz'))
+_keyboards_uz['order.payment_confirmation'] = _order_confirmation_payment_keyboard_uz
 _comments_keyboard_uz = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
 _comments_keyboard_uz.add(*[get_string('comments.point_' + str(x), 'uz') for x in list(reversed(range(1, 6)))])
 _comments_keyboard_uz.add(get_string('go_to_menu', 'uz'))

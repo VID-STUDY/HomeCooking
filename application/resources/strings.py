@@ -1,6 +1,9 @@
 import os
 import json
-from application.core.models import Dish, Order, Comment
+from application.core.models import Dish, Order, Comment, OrderItem
+from telebot.types import LabeledPrice
+from typing import List
+import settings
 
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -180,3 +183,15 @@ def from_category_name(category, language):
         return category.name_uz
     else:
         return category.name
+
+
+def from_dish_name(dish: Dish, language):
+    if language == 'uz':
+        return dish.name_uz
+    else:
+        return dish.name
+
+
+def from_order_items_to_labeled_prices(order_items: List[OrderItem], language) -> List[LabeledPrice]:
+    currency_value = settings.get_currency_value()
+    return [LabeledPrice(from_dish_name(oi.dish, language) + ' x ' + str(oi.count), oi.count * oi.dish.price * currency_value * 100) for oi in order_items]
