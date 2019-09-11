@@ -173,7 +173,7 @@ class Order(db.Model):
 
     class PaymentMethods:
         CASH = 'cash'
-        TERMINAL = 'terminal'
+        PAYME = 'payme'
 
 
 class Location(db.Model):
