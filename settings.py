@@ -77,3 +77,26 @@ def get_limit_delivery_price() -> int:
     settings.close()
     return value
 
+
+def set_currency_value(value: int):
+    """
+    Set currency value
+    :param value: currency value
+    :return: void
+    """
+    settings = shelve.open(filename)
+    settings['currency_value'] = value
+    settings.close()
+
+
+def get_currency_value() -> int:
+    """
+    Get currency value
+    :return: currency value
+    """
+    settings = shelve.open(filename)
+    if 'currency_value' not in settings:
+        settings['currency_value'] = 8600
+    value = settings['currency_value']
+    settings.close()
+    return value
