@@ -3,6 +3,7 @@ astroid==2.2.5
 certifi==2019.3.9
 chardet==3.0.4
 Click==7.0
+colorama==0.4.1
 decorator==4.4.0
 Flask==1.0.2
 Flask-Login==0.4.1
