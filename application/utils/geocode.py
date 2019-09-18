@@ -39,7 +39,7 @@ def get_address_by_coordinates(coordinates: tuple) -> Optional[AnyStr]:
     """
     latitude = coordinates[0]
     longitude = coordinates[1]
-    location = geocoder.yandex([latitude, longitude], method='reverse', lang='ru-RU')
+    location = geocoder.yandex([latitude, longitude], method='reverse', lang='ru-RU', kind='locality')
     if not location.json:
         return None
     return location.json.get('address')
