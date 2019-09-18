@@ -94,5 +94,5 @@ def welcome(message):
         return
     welcome_message = strings.get_string('registration.welcome').format(user.full_user_name)
     language_keyboard = keyboards.get_keyboard('welcome.language')
-    telegram_bot.send_message(chat_id, welcome_message, reply_markup=language_keyboard)
+    telegram_bot.send_message(chat_id, welcome_message, reply_markup=language_keyboard, parse_mode='HTML')
     telegram_bot.register_next_step_handler_by_chat_id(chat_id, process_user_language)
