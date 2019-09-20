@@ -61,7 +61,6 @@ def create_category():
     all_categories = dishservice.get_all_categories()
     form.parent.choices = [(c.id, '{} | {}'.format(c.name, c.name_uz)) for c in all_categories]
     form.parent.choices.insert(0, (0, 'Нет'))
-    form.parent.data = 0
     if form.validate_on_submit():
         name_ru = form.name_ru.data
         name_uz = form.name_uz.data
@@ -69,6 +68,7 @@ def create_category():
         dishservice.create_category(name_ru, name_uz, parent_id)
         flash('Категория {} | {} добавлена'.format(name_ru, name_uz), category='success')
         return redirect(url_for('admin.catalog'))
+    form.parent.data = 0
     return render_template('admin/new_category.html', title='Добавить категорию', area='catalog', form=form)
 
 
