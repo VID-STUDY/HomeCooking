@@ -16,16 +16,16 @@ def get_all_categories(sort_by_number: bool = False) -> List[DishCategory]:
 
 def get_parent_categories(sort_by_number: bool = False) -> List[DishCategory]:
     if sort_by_number:
-        return DishCategory.query.filter(DishCategory.parent_id == None).order_by(DishCategory.number.asc()).all()
+        return DishCategory.query.filter(DishCategory.parent_id == 0).order_by(DishCategory.number.asc()).all()
     else:
-        return DishCategory.query.filter(DishCategory.parent_id == None).all()
+        return DishCategory.query.filter(DishCategory.parent_id == 0).all()
 
 
 def get_category_by_id(category_id) -> DishCategory:
     return DishCategory.query.get_or_404(category_id)
 
 
-def update_category(category_id: int, name_ru: str, name_uz:str, parent_id=None):
+def update_category(category_id: int, name_ru: str, name_uz:str, parent_id=0):
     category = DishCategory.query.get_or_404(category_id)
     category.name = name_ru
     category.name_uz = name_uz
@@ -34,7 +34,7 @@ def update_category(category_id: int, name_ru: str, name_uz:str, parent_id=None)
     return category
 
 
-def create_category(name_ru: str, name_uz: str, parent_id=None):
+def create_category(name_ru: str, name_uz: str, parent_id=0):
     category = DishCategory(name=name_ru, name_uz=name_uz, parent_id=parent_id)
     db.session.add(category)
     db.session.commit()
