@@ -12,7 +12,7 @@ def request_registration_phone_number_handler(message: Message, **kwargs):
     name = kwargs.get('name')
 
     def error():
-        error_msg = strings.get_string('welcome.phone_number')
+        error_msg = strings.get_string('registration.request.phone_number')
         telegram_bot.send_message(chat_id, error_msg, parse_mode='HTML')
         telegram_bot.register_next_step_handler_by_chat_id(chat_id, request_registration_phone_number_handler, name=name)
 
@@ -36,9 +36,9 @@ def request_registration_phone_number_handler(message: Message, **kwargs):
             phone_number = match.group()
     username = message.from_user.username
     userservice.create_registration_request(user_id, phone_number, username, name)
-    success_message = strings.get_string('registration.welcome.successful')
+    success_message = strings.get_string('registration.welcome.successful').format(name)
     remove_keyboard = keyboards.get_keyboard('remove')
-    telegram_bot.send_message(chat_id, success_message, reply_markup=remove_keyboard)
+    telegram_bot.send_message(chat_id, success_message, reply_markup=remove_keyboard, parse_mode='HTML')
 
 
 def process_user_language(message: Message):
@@ -123,7 +123,7 @@ def request_registration_name_handler(message: Message):
         error()
         return
     name = message.text
-    phone_number_message = strings.get_string('registration.request.phone_number').format(name)
+    phone_number_message = strings.get_string('registration.request.phone_number')
     phone_number_keyboard = keyboards.from_user_phone_number('ru')
     telegram_bot.send_message(chat_id, phone_number_message, parse_mode='HTML', reply_markup=phone_number_keyboard)
     telegram_bot.register_next_step_handler_by_chat_id(chat_id, request_registration_phone_number_handler, name=name)
