@@ -4,6 +4,7 @@ from application.utils import date
 from . import dishservice
 from datetime import datetime, timedelta
 import secrets
+from typing import List
 
 
 def is_user_exists(user_id: int):
@@ -173,5 +174,11 @@ def create_registration_request(user_id: int, phone_number: str, tg_username: st
     db.session.commit()
 
 
-def get_all_registration_requests():
+def get_all_registration_requests() -> List[RegistrationRequest]:
     return RegistrationRequest.query.order_by(RegistrationRequest.created_at.desc()).all()
+
+
+def confirm_registration_request(request_id: int):
+    request = RegistrationRequest.query.get_or_404(request_id)
+    db.session.delete(request)
+    db.session.commit()
