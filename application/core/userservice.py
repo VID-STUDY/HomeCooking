@@ -1,5 +1,5 @@
 from application import db
-from application.core.models import User, UserAdmin, UserDish, Dish
+from application.core.models import User, UserAdmin, UserDish, Dish, RegistrationRequest
 from application.utils import date
 from . import dishservice
 from datetime import datetime, timedelta
@@ -164,3 +164,14 @@ def remove_dish_from_user_cart(user_id: int, dish_name: str, language: str) -> b
     user.remove_dish_from_cart(dish)
     db.session.commit()
     return True
+
+
+def create_registration_request(user_id: int, phone_number: str, tg_username: str, username: str):
+    request = RegistrationRequest(user_id=user_id, phone_number=phone_number,
+                                  tg_username=tg_username, username=username)
+    db.session.add(request)
+    db.session.commit()
+
+
+def get_all_registration_requests():
+    return RegistrationRequest.query.order_by(RegistrationRequest.created_at.desc()).all()

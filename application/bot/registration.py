@@ -6,15 +6,15 @@ from telebot.types import Message
 import re
 
 
-def process_phone_number(message: Message, **kwargs):
+def request_registration_phone_number_handler(message: Message, **kwargs):
     chat_id = message.chat.id
     user_id = message.from_user.id
-    language = kwargs.get('language', 'ru')
+    name = kwargs.get('name')
 
     def error():
-        error_msg = strings.get_string('welcome.phone_number', language)
+        error_msg = strings.get_string('welcome.phone_number')
         telegram_bot.send_message(chat_id, error_msg, parse_mode='HTML')
-        telegram_bot.register_next_step_handler_by_chat_id(chat_id, process_phone_number)
+        telegram_bot.register_next_step_handler_by_chat_id(chat_id, request_registration_phone_number_handler, name=name)
 
     if message.contact is not None:
         phone_number = message.contact.phone_number
@@ -28,12 +28,11 @@ def process_phone_number(message: Message, **kwargs):
                 error()
                 return
             phone_number = match.group()
-    full_user_name = message.from_user.first_name
-    if message.from_user.last_name:
-        full_user_name += " " + message.from_user.last_name
-    userservice.register_user(user_id, message.from_user.username, full_user_name, phone_number, language)
-    success_message = strings.get_string('welcome.registration_successfully', language)
-    botutils.to_main_menu(chat_id, language, success_message)
+    username = message.from_user.username
+    userservice.create_registration_request(user_id, phone_number, username, name)
+    success_message = strings.get_string('registration.welcome.successful')
+    remove_keyboard = keyboards.get_keyboard('remove')
+    telegram_bot.send_message(chat_id, success_message, reply_markup=remove_keyboard)
 
 
 def process_user_language(message: Message):
@@ -96,3 +95,29 @@ def welcome(message):
     language_keyboard = keyboards.get_keyboard('welcome.language')
     telegram_bot.send_message(chat_id, welcome_message, reply_markup=language_keyboard, parse_mode='HTML')
     telegram_bot.register_next_step_handler_by_chat_id(chat_id, process_user_language)
+
+
+def request_registration_handler(message: Message):
+    chat_id = message.chat.id
+
+    welcome_message = strings.get_string('registration.request.welcome')
+    telegram_bot.send_message(chat_id, welcome_message)
+    telegram_bot.register_next_step_handler_by_chat_id(chat_id, request_registration_name_handler)
+
+
+def request_registration_name_handler(message: Message):
+    chat_id = message.chat.id
+
+    def error():
+        error_msg = strings.get_string('registration.request.welcome')
+        telegram_bot.send_message(chat_id, error_msg)
+        telegram_bot.register_next_step_handler_by_chat_id(chat_id, request_registration_name_handler)
+
+    if not message.text:
+        error()
+        return
+    name = message.text
+    phone_number_message = strings.get_string('registration.request.phone_number').format(name)
+    phone_number_keyboard = keyboards.from_user_phone_number('ru')
+    telegram_bot.send_message(chat_id, phone_number_message, parse_mode='HTML', reply_markup=phone_number_keyboard)
+    telegram_bot.register_next_step_handler_by_chat_id(chat_id, request_registration_phone_number_handler, name=name)
