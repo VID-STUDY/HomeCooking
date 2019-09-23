@@ -23,6 +23,12 @@ def request_registration_phone_number_handler(message: Message, **kwargs):
             error()
             return
         else:
+            if strings.get_string('go_back') in message.text:
+                welcome_message = strings.get_string('registration.request.welcome')
+                remove_keyboard = keyboards.get_keyboard('remove')
+                telegram_bot.send_message(chat_id, welcome_message, reply_markup=remove_keyboard)
+                telegram_bot.register_next_step_handler_by_chat_id(chat_id, request_registration_name_handler)
+                return
             match = re.match(r'\+*998\s*\d{2}\s*\d{3}\s*\d{2}\s*\d{2}', message.text)
             if match is None:
                 error()
