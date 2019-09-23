@@ -2,6 +2,7 @@ from application import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from sqlalchemy_mptt.mixins import BaseNestedSets
+from datetime import datetime
 
 
 class CartItem(db.Model):
@@ -208,6 +209,16 @@ class NotificationChat(db.Model):
     __tablename__ = "notification_chats"
     chat_id = db.Column(db.Integer, primary_key=True)
     chat_title = db.Column(db.String(100))
+
+
+class RegistrationRequest(db.Model):
+    __tablename__ = "registration_requests"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    phone_number = db.Column(db.String(20))
+    tg_username = db.Column(db.String(100))
+    username = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 @login.user_loader
