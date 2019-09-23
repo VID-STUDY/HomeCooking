@@ -23,7 +23,7 @@
                                 <td>{{ request.username }}</td>
                                 <td>
                                     {% if request.tg_username %}
-                                        <a href="https://t.me/{{ request.tg_username }}">{{ request.tg_username }}</a>
+                                        <a target="_blank" href="https://t.me/{{ request.tg_username }}">{{ request.tg_username }}</a>
                                     {% else %}
                                         N/A
                                     {% endif %}
