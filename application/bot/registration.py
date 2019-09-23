@@ -81,7 +81,7 @@ def welcome(message):
     try:
         token = message_text_parts[1]
     except IndexError:
-        not_allowed()
+        request_registration_handler(message)
         return
     user = userservice.get_user_by_token(token)
     if not user:
