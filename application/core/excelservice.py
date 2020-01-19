@@ -26,7 +26,6 @@ def parse_excel_file(path_to_file: str):
 
 def _create_product_type(parent_category_name, product_type_name) -> DishCategory:
     parent_category = dishservice.get_category_by_name(parent_category_name, 'ru')
-    product_type_category = dishservice.get_category_by_name(product_type_name, 'ru')
 
     if not parent_category:
         parent_category = dishservice.create_category('Тип продукта', 'Тип продукта')
@@ -34,12 +33,11 @@ def _create_product_type(parent_category_name, product_type_name) -> DishCategor
     def new_category():
         return dishservice.create_category(product_type_name, product_type_name, parent_category.id)
 
-    if parent_category and product_type_category:
-        if product_type_category.parent_id == parent_category.id:
-            return product_type_category
+    product_type_category = parent_category.get_children().filter(DishCategory.name == product_type_name).first()
+
+    if not product_type_category:
         return new_category()
-    elif parent_category and not product_type_category:
-        return new_category()
+    return product_type_category
 
 
 def _create_product_brand(brand_name) -> DishCategory:
