@@ -36,12 +36,13 @@ def update_category(category_id: int, name_ru: str, name_uz:str, parent_id=0):
     return category
 
 
-def create_category(name_ru: str, name_uz: str, parent_id=0):
+def create_category(name_ru: str, name_uz: str, parent_id=0) -> DishCategory:
     if parent_id == 0:
         parent_id = None
     category = DishCategory(name=name_ru, name_uz=name_uz, parent_id=parent_id)
     db.session.add(category)
     db.session.commit()
+    return category
 
 
 def remove_category(category_id: int):
