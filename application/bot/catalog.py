@@ -4,6 +4,7 @@ from application.resources import strings, keyboards
 from application.utils import bot as botutils
 from telebot.types import Message
 from application.core import exceptions
+from application.core.models import Dish
 
 
 def check_catalog(message: Message):
@@ -29,7 +30,7 @@ def back_to_the_catalog(chat_id, language, message_txt=None, parent_category=Non
         category_keyboard = keyboards.from_dish_categories(categories, language)
         bot.send_message(chat_id, catalog_message, reply_markup=category_keyboard)
         if parent_category.parent:
-            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor, parent_category = parent_category.parent)
+            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor, parent_category=parent_category.parent)
         else:
             bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
         return
@@ -94,7 +95,7 @@ def choose_dish_processor(message: Message, **kwargs):
         cart.cart_processor(message, choose_dish_processor)
     else:
         dish_name = message.text
-        dish = dishservice.get_dish_by_name(dish_name, language)
+        dish = dishservice.get_dish_by_name(dish_name, language, kwargs.get('category'))
         if not dish:
             error()
             return
@@ -148,7 +149,10 @@ def catalog_processor(message: Message, **kwargs):
         orders.order_processor(message)
     else:
         category_name = message.text
-        category = dishservice.get_category_by_name(category_name, language)
+        if 'parent_category' in kwargs:
+            category = dishservice.get_category_by_name(category_name, language, kwargs.get('parent_category'))
+        else:
+            category = dishservice.get_category_by_name(category_name, language)
         if not category:
             error()
             return
@@ -159,7 +163,7 @@ def catalog_processor(message: Message, **kwargs):
             bot.send_message(chat_id, catalog_message, reply_markup=category_keyboard)
             bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor, parent_category=category)
         elif category.dishes.count() > 0:
-            dishes = dishservice.get_dishes_by_category_name(category_name, language, sort_by_number=True)
+            dishes = category.dishes.filter(Dish.is_hidden == False).order_by(Dish.number.asc())
             dish_message = strings.get_string('catalog.choose_dish', language)
             dishes_keyboard = keyboards.from_dishes(dishes, language)
             bot.send_message(chat_id, dish_message, reply_markup=dishes_keyboard)

@@ -117,10 +117,14 @@ def get_dish_by_id(dish_id: int):
     return Dish.query.get_or_404(dish_id)
 
 
-def get_category_by_name(name: str, language: str) -> Optional[DishCategory]:
+def get_category_by_name(name: str, language: str, parent_category: DishCategory = None) -> Optional[DishCategory]:
     if language == 'uz':
+        if parent_category:
+            return parent_category.get_children().filter(DishCategory.name_uz == name).first()
         return DishCategory.query.filter(DishCategory.name_uz == name).first()
     else:
+        if parent_category:
+            return parent_category.get_children().filter(DishCategory.name == name).first()
         return DishCategory.query.filter(DishCategory.name == name).first()
 
 
@@ -149,11 +153,17 @@ def get_dishes_from_category(category: DishCategory, sort_by_number: bool = Fals
     return query.all()
 
 
-def get_dish_by_name(name: str, language: str) -> Dish:
+def get_dish_by_name(name: str, language: str, category: DishCategory = None) -> Dish:
     if language == 'uz':
-        dish = Dish.query.filter(Dish.name_uz == name).first()
+        if category:
+            dish = category.dishes.filter(Dish.name_uz == name).first()
+        else:
+            dish = Dish.query.filter(Dish.name_uz == name).first()
     else:
-        dish = Dish.query.filter(Dish.name == name).first()
+        if category:
+            dish = category.dishes.filter(Dish.name == name).first()
+        else:
+            dish = Dish.query.filter(Dish.name == name).first()
     return dish
 
 
