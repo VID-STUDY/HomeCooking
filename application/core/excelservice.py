@@ -40,11 +40,27 @@ def _create_product_type(parent_category_name, product_type_name) -> DishCategor
     return product_type_category
 
 
+def _create_product_type_for_brand(brand_category: DishCategory, product_type_name) -> DishCategory:
+    parent_category = brand_category
+    product_type_category = parent_category.get_children().filter(DishCategory.name == product_type_name).first()
+    if not product_type_category:
+        return dishservice.create_category(product_type_name, product_type_name, parent_category.id)
+    return product_type_category
+
+
+def _create_product_type_for_vendor(vendor_category: DishCategory, product_type_name) -> DishCategory:
+    parent_category = vendor_category
+    product_type_category = parent_category.get_children().filter(DishCategory.name == product_type_name).first()
+    if not product_type_category:
+        return dishservice.create_category(product_type_name, product_type_name, parent_category.id)
+    return product_type_category
+
+
 def _create_product_brand(brand_name) -> DishCategory:
     parent_category = dishservice.get_category_by_name('Бренд', 'ru')
     if not parent_category:
         parent_category = dishservice.create_category('Бренд', 'Бренд')
-    category = dishservice.get_category_by_name(brand_name, 'ru')
+    category = dishservice.get_category_by_name(brand_name, 'ru', parent_category=parent_category)
     if category:
         return category
     return dishservice.create_category(brand_name, brand_name, parent_category.id)
@@ -54,7 +70,7 @@ def _create_product_vendor(vendor_name) -> DishCategory:
     parent_category = dishservice.get_category_by_name('Производитель', 'ru')
     if not parent_category:
         parent_category = dishservice.create_category('Производитель', 'Производитель')
-    category = dishservice.get_category_by_name(vendor_name, 'ru')
+    category = dishservice.get_category_by_name(vendor_name, 'ru', parent_category=parent_category)
     if category:
         return category
     return dishservice.create_category(vendor_name, vendor_name, parent_category.id)
@@ -81,14 +97,14 @@ def _create_product_for_type(product_type, product_name, product_description, pr
 
 def _create_product_for_brand(product_brand, product_type, product_name, product_description, product_price):
     brand_category = _create_product_brand(product_brand)
-    category = _create_product_type(brand_category.name, product_type)
+    category = _create_product_type_for_brand(brand_category, product_type)
     dishservice.create_dish(product_name, product_name, product_description,
                             product_description, None, product_price, category.id)
 
 
 def _create_product_for_vendor(product_vendor, product_type, product_name, product_description, product_price):
     vendor_category = _create_product_vendor(product_vendor)
-    category = _create_product_type(vendor_category.name, product_type)
+    category = _create_product_type_for_vendor(vendor_category, product_type)
     dishservice.create_dish(product_name, product_name, product_description,
                             product_description, None, product_price, category.id)
 
