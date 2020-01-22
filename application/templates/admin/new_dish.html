@@ -1,18 +1,18 @@
 {% extends 'layouts/admin.html' %}
-{% block header %}Добавить блюдо{% endblock %}
+{% block header %}Добавить товар{% endblock %}
 {% block  description %}
     в каталог
 {% endblock %}
 {% block breadcrumbs %}
     <li><a href="{{ url_for('admin.catalog') }}">Каталог</a></li>
-    <li class="active">Добавить блюдо</li>
+    <li class="active">Добавить товар</li>
 {% endblock %}
 {% block content %}
     <div class="row">
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">Новое блюдо</h3>
+                    <h3 class="box-title">Новый товар</h3>
                 </div>
                 <div class="box-body">
                     <form action="" method="post" enctype="multipart/form-data">
