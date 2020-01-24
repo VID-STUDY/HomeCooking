@@ -77,10 +77,7 @@ class User(db.Model):
         :param dish: Dish
         :return: void
         """
-        cart_item = self._get_cart_item_for_dish(dish)
-        if not cart_item:
-            return
-        self.cart.remove(cart_item)
+        self.cart.remove(dish)
 
 
 class UserAdmin(db.Model, UserMixin):

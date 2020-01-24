@@ -145,7 +145,7 @@ def get_user_cart(user_id: int) -> list:
 
 def clear_user_cart(user_id: int):
     user = get_user_by_telegram_id(user_id)
-    dishes = [cart_item.dish for cart_item in user.cart.all()]
+    dishes = [cart_item for cart_item in user.cart.all()]
     for dish in dishes:
         user.remove_dish_from_cart(dish)
     db.session.commit()
@@ -159,7 +159,10 @@ def add_dish_to_cart(user_id: int, dish: Dish, count: int):
 
 def remove_dish_from_user_cart(user_id: int, dish_name: str, language: str) -> bool:
     user = get_user_by_telegram_id(user_id)
-    dish = dishservice.get_dish_by_name(dish_name, language)
+    if language == 'uz':
+        dish = user.cart.filter(Dish.name_uz == dish_name).first()
+    else:
+        dish = user.cart.filter(Dish.name == dish_name).first()
     if not dish:
         return False
     user.remove_dish_from_cart(dish)
