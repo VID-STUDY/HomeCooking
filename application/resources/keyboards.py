@@ -20,7 +20,6 @@ _keyboards_ru['welcome.language'] = _welcome_language
 _main_menu_ru = ReplyKeyboardMarkup(resize_keyboard=True)
 _main_menu_ru.add(get_string('main_menu.make_order'))
 _main_menu_ru.add(get_string('main_menu.send_comment'))
-_main_menu_ru.add(get_string('main_menu.language'))
 _keyboards_ru['main_menu'] = _main_menu_ru
 
 _go_back_ru = ReplyKeyboardMarkup(resize_keyboard=True)

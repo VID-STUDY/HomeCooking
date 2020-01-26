@@ -22,8 +22,8 @@ def checker(message: Message):
     return botutlis.check_auth(message) and check_language(message)
 
 
-@telegram_bot.message_handler(commands=['language'])
-@telegram_bot.message_handler(content_types=['text'], func=checker)
+# @telegram_bot.message_handler(commands=['language'])
+# @telegram_bot.message_handler(content_types=['text'], func=checker)
 def language_handler(message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
