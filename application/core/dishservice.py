@@ -120,11 +120,11 @@ def get_dish_by_id(dish_id: int):
 def get_category_by_name(name: str, language: str, parent_category: DishCategory = None) -> Optional[DishCategory]:
     if language == 'uz':
         if parent_category:
-            return parent_category.get_children().filter(DishCategory.name_uz == name).first()
+            return DishCategory.query.filter(DishCategory.name_uz == name, DishCategory.parent_id == parent_category.id).first()
         return DishCategory.query.filter(DishCategory.name_uz == name).first()
     else:
         if parent_category:
-            return parent_category.get_children().filter(DishCategory.name == name).first()
+            return DishCategory.query.filter(DishCategory.name == name, DishCategory.parent_id == parent_category.id).first()
         return DishCategory.query.filter(DishCategory.name == name).first()
 
 
@@ -161,7 +161,7 @@ def get_dish_by_name(name: str, language: str, category: DishCategory = None) ->
             dish = Dish.query.filter(Dish.name_uz == name).first()
     else:
         if category:
-            dish = category.dishes.filter(Dish.name == name).first()
+            dish = Dish.query.filter(Dish.name == name, Dish.category_id == category.id).first()
         else:
             dish = Dish.query.filter(Dish.name == name).first()
     return dish
