@@ -122,46 +122,6 @@ def set_address_by_map_location(user_id: int, map_location: tuple) -> bool:
     current_order = get_current_order_by_user(user_id)
     order_location = Location(latitude=latitude, longitude=longitude, address=address)
     current_order.location = order_location
-    # Calculate a delivery price
-    delivery_cost = settings.get_delivery_cost()
-    first_3_km = delivery_cost[0]
-    others_km = delivery_cost[1]
-    # Calculate distance from cafe to customer
-    distance = geocode.distance_between_two_points(map_location, settings.get_cafe_coordinates())
-    rest_distance = distance[0]
-    if distance[1] == 'm':
-        # If distance less than 1 kilometer, dont't care about it
-        current_order.delivery_price = first_3_km
-    else:
-        # And most cheerful actions begin here...
-        if rest_distance <= 3:
-            # If distance is in limits 3 kilometres, don't care about it
-            delivery_price = first_3_km
-        else:
-            # Else, calculate first 3 kilometres, than others kilometres
-            price = first_3_km
-            rest_distance -= 3.0
-            price += rest_distance * others_km
-            delivery_price = price
-        # Check if calculated delivery price is more than limit
-        limit_delivery_price = settings.get_limit_delivery_price()
-        if delivery_price > limit_delivery_price:
-            current_order.delivery_price = limit_delivery_price
-        # If the delivery price is less than limit, round price
-        else:
-            # -- Round the delivery price --
-            # Here we get the rounded price without hundreds
-            int_value = floor(delivery_price / 1000) * 1000
-            if delivery_price != int_value:
-                # Add 500 to compare if delivery price less or more the half integer value
-                half_int_value = int_value + 500
-                if delivery_price < half_int_value:
-                    difference = half_int_value - delivery_price
-                    delivery_price += (difference - 100)
-                    delivery_price = round(delivery_price/1000 + 5/100, 1) * 1000
-                elif delivery_price > half_int_value:
-                    delivery_price = round(delivery_price / 1000) * 1000
-            current_order.delivery_price = delivery_price
     db.session.commit()
     return True
 
