@@ -181,7 +181,12 @@ def get_all_registration_requests() -> List[RegistrationRequest]:
     return RegistrationRequest.query.order_by(RegistrationRequest.created_at.desc()).all()
 
 
-def confirm_registration_request(request_id: int):
+def delete_registration_request(request_id: int):
     request = RegistrationRequest.query.get_or_404(request_id)
     db.session.delete(request)
     db.session.commit()
+
+
+def confirm_registration_request(request_id: int):
+    request = RegistrationRequest.query.get_or_404(request_id)
+    return create_user(request.username, request.phone_number)

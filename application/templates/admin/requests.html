@@ -31,6 +31,7 @@
                                 <td>{{ request.phone_number }}</td>
                                 <td>{{ request.created_at }}</td>
                                 <td>
+                                    <a href="{{ url_for('admin.confirm_request', request_id=request.id) }}" class="btn btn-info btn-flat"><i class="fas fa-check"></i></a>
                                     <a href="{{ url_for('admin.delete_request', request_id=request.id) }}" onclick="return confirm('Вы уверены?')" class="btn btn-danger btn-flat"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
