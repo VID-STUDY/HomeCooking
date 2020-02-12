@@ -42,6 +42,7 @@ class User(db.Model):
     token = db.Column(db.String(50))
     confirmed = db.Column(db.Boolean)
     telegram_id = db.Column(db.Integer)
+    shop_address = db.Column(db.String(50))
     registration_date = db.Column(db.DateTime)
     cart = db.relationship('CartItem', lazy='dynamic', backref='user', cascade='all, delete-orphan')
     orders = db.relationship('Order', lazy='dynamic', backref='customer', cascade='all, delete-orphan')
