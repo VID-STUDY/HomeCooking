@@ -24,7 +24,7 @@
     "catalog.empty": "Каталог пуст",
     "catalog.start": "Что вы хотите заказать?",
     "catalog.error": "Выберите категорию ниже",
-    "catalog.cart": "\uD83D\uDED2 Корзина",
+    "catalog.cart": "\uD83D\uDE96 Оформить заказ",
     "catalog.make_order": "\uD83D\uDE96 Оформить заказ",
     "catalog.choose_dish": "Выберите товар",
     "catalog.dish_error": "Выберите товар из списка ниже",

@@ -4,6 +4,7 @@ from application.resources import strings, keyboards
 from telebot.types import Message
 from .catalog import back_to_the_catalog, catalog_processor
 from .orders import order_processor
+from application.utils import bot as botutils
 
 
 def _total_cart_sum(cart) -> int:
@@ -26,10 +27,10 @@ def cart_action_processor(message: Message):
         error()
         return
     if strings.get_string('go_back', language) in message.text:
-        back_to_the_catalog(chat_id, language)
+        botutils.to_main_menu(chat_id, language)
     elif strings.get_string('cart.clear', language) in message.text:
         userservice.clear_user_cart(user_id)
-        back_to_the_catalog(chat_id, language)
+        botutils.to_main_menu(chat_id, language)
     elif strings.get_string('catalog.make_order', language) in message.text:
         order_processor(message)
     else:
@@ -38,7 +39,7 @@ def cart_action_processor(message: Message):
         if removing_result:
             cart = userservice.get_user_cart(user_id)
             if len(cart) == 0:
-                back_to_the_catalog(chat_id, language)
+                botutils.to_main_menu(chat_id, language)
                 return
             total = _total_cart_sum(cart)
             cart_contains_message = strings.from_cart_items(cart, language, total)

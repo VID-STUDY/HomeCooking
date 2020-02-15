@@ -59,7 +59,7 @@ def dish_action_processor(message: Message):
         dish_message = strings.get_string('catalog.choose_dish', language)
         dishes_keyboard = keyboards.from_dishes(dishes, language)
         bot.send_message(chat_id, dish_message, reply_markup=dishes_keyboard)
-        bot.register_next_step_handler_by_chat_id(chat_id, choose_dish_processor, category=current_dish.category)
+        bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor, category=current_dish.category)
     elif strings.get_string('catalog.cart', language) in message.text:
         cart.cart_processor(message, dish_action_processor)
     else:
@@ -68,31 +68,34 @@ def dish_action_processor(message: Message):
             return
         userservice.add_dish_to_cart(user_id, current_dish, int(message.text))
         continue_message = strings.get_string('catalog.continue', language)
-        back_to_the_catalog(chat_id, language, continue_message)
+        botutils.to_main_menu(chat_id, language, continue_message)
 
 
-def choose_dish_processor(message: Message, **kwargs):
+def catalog_processor(message: Message, **kwargs):
     chat_id = message.chat.id
+    if message.successful_payment:
+        bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
+        return
     user_id = message.from_user.id
     language = userservice.get_user_language(user_id)
 
     def error():
-        error_message = strings.get_string('catalog.dish_error', language)
+        error_message = strings.get_string('catalog.error', language)
         bot.send_message(chat_id, error_message)
-        bot.register_next_step_handler_by_chat_id(chat_id, choose_dish_processor)
+        bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
 
     if not message.text:
         error()
         return
     if strings.get_string('go_back', language) in message.text:
-        if 'category' in kwargs:
-            category = kwargs.get('category')
-            catalog_message = strings.from_category_name(category, language)
-            back_to_the_catalog(chat_id, language, catalog_message, category)
-            return
-        back_to_the_catalog(chat_id, language)
+        if 'parent_category' in kwargs:
+            parent_category = kwargs.get('parent_category')
+            catalog_message = strings.from_category_name(parent_category, language)
+            botutils.to_main_menu(chat_id, language, catalog_message, parent_category)
+        else:
+            botutils.to_main_menu(chat_id, language)
     elif strings.get_string('catalog.cart', language) in message.text:
-        cart.cart_processor(message, choose_dish_processor)
+        cart.cart_processor(message)
     else:
         dish_name = message.text
         dish = dishservice.get_dish_by_name(dish_name, language, kwargs.get('category'))
@@ -118,63 +121,6 @@ def choose_dish_processor(message: Message, **kwargs):
         dish_action_helper = strings.get_string('catalog.dish_action_helper', language)
         bot.send_message(chat_id, dish_action_helper)
         bot.register_next_step_handler_by_chat_id(chat_id, dish_action_processor)
-
-
-def catalog_processor(message: Message, **kwargs):
-    chat_id = message.chat.id
-    if message.successful_payment:
-        bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
-        return
-    user_id = message.from_user.id
-    language = userservice.get_user_language(user_id)
-
-    def error():
-        error_message = strings.get_string('catalog.error', language)
-        bot.send_message(chat_id, error_message)
-        bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
-
-    if not message.text:
-        error()
-        return
-    if strings.get_string('go_back', language) in message.text:
-        if 'parent_category' in kwargs:
-            parent_category = kwargs.get('parent_category')
-            catalog_message = strings.from_category_name(parent_category, language)
-            back_to_the_catalog(chat_id, language, catalog_message, parent_category)
-        else:
-            botutils.to_main_menu(chat_id, language)
-    elif strings.get_string('catalog.cart', language) in message.text:
-        cart.cart_processor(message)
-    elif strings.get_string('catalog.make_order', language) in message.text:
-        orders.order_processor(message)
-    else:
-        category_name = message.text
-        if 'parent_category' in kwargs:
-            category = dishservice.get_category_by_name(category_name, language, kwargs.get('parent_category'))
-        else:
-            category = dishservice.get_category_by_name(category_name, language)
-        if not category:
-            error()
-            return
-        if category.get_children().count() > 0:
-            categories = category.get_children().all()
-            catalog_message = strings.from_category_name(category, language)
-            category_keyboard = keyboards.from_dish_categories(categories, language)
-            bot.send_message(chat_id, catalog_message, reply_markup=category_keyboard)
-            bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor, parent_category=category)
-        elif category.dishes.count() > 0:
-            dishes = category.dishes.filter(Dish.is_hidden == False).order_by(Dish.number.asc())
-            dish_message = strings.get_string('catalog.choose_dish', language)
-            dishes_keyboard = keyboards.from_dishes(dishes, language)
-            bot.send_message(chat_id, dish_message, reply_markup=dishes_keyboard)
-            bot.register_next_step_handler_by_chat_id(chat_id, choose_dish_processor, category=category)
-        else:
-            empty_message = strings.get_string('catalog.empty', language)
-            bot.send_message(chat_id, empty_message)
-            if category.parent:
-                bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor, parent_category=category.parent)
-            else:
-                bot.register_next_step_handler_by_chat_id(chat_id, catalog_processor)
 
 
 @bot.message_handler(commands=['order'], func=botutils.check_auth)

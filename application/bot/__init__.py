@@ -2,6 +2,7 @@ from application import telegram_bot
 from config import Config
 from application.core import userservice, orderservice
 from application.resources import strings, keyboards
+from application.utils import bot as botutils
 from flask import Blueprint, request, abort
 import telebot
 import os
@@ -78,7 +79,5 @@ def empty_message(message: telebot.types.Message):
         registration.welcome(message)
         return
     language = userservice.get_user_language(user_id)
-    main_menu_message = strings.get_string('main_menu.choose_option', language)
-    main_menu_keyboard = keyboards.get_keyboard('main_menu', language)
-    telegram_bot.send_message(chat_id, main_menu_message, reply_markup=main_menu_keyboard)
+    botutils.to_main_menu(chat_id, language)
     return

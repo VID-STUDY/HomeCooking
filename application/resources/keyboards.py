@@ -132,6 +132,17 @@ def from_dishes(dishes, language: str) -> ReplyKeyboardMarkup:
     return dishes_keyboard
 
 
+def get_main_menu_keyboard(dishes: list, language: str):
+    dishes_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    if language == 'uz':
+        names = [dish.name_uz for dish in dishes]
+    else:
+        names = [dish.name for dish in dishes]
+    dishes_keyboard.add(*names)
+    dishes_keyboard.add(get_string('catalog.cart', language))
+    return dishes_keyboard
+
+
 def from_cart_items(cart_items, language) -> ReplyKeyboardMarkup:
     cart_items_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     if language == 'uz':

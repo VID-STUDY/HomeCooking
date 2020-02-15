@@ -170,3 +170,12 @@ def get_dish_by_name(name: str, language: str, category: DishCategory = None) ->
 def set_dish_image_id(dish: Dish, image_id: str):
     dish.image_id = image_id
     db.session.commit()
+
+
+def get_all_dishes(sort_by_number: bool = False, include_hidden=False):
+    query = Dish.query
+    if not include_hidden:
+        query = query.filter(Dish.is_hidden != True)
+    if sort_by_number:
+        query = query.order_by(Dish.number.asc())
+    return query.all()

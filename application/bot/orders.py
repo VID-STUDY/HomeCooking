@@ -1,6 +1,7 @@
 from application import telegram_bot as bot
 from application.core import orderservice, userservice
 from application.resources import strings, keyboards
+from application.utils import bot as botutils
 from telebot.types import Message, PreCheckoutQuery
 from .catalog import back_to_the_catalog
 from application.core.models import Order
@@ -21,7 +22,7 @@ def pre_checkout_order_query_handler(query: PreCheckoutQuery):
     bot.answer_pre_checkout_query(query.id, ok=True)
     order_success_message = strings.get_string('order.success', language)
     bot.clear_step_handler_by_chat_id(chat_id)
-    back_to_the_catalog(chat_id, language, order_success_message)
+    botutils.to_main_menu(chat_id, language, order_success_message)
     notify_new_order(order, total)
 
 
@@ -94,7 +95,7 @@ def order_processor(message: Message):
     cart = userservice.get_user_cart(user_id)
     if len(cart) == 0:
         cart_empty_message = strings.get_string('cart.empty', language)
-        back_to_the_catalog(chat_id, language, cart_empty_message)
+        botutils.to_main_menu(chat_id, language, cart_empty_message)
         return
     _to_the_address(chat_id, language)
 
@@ -114,7 +115,7 @@ def shipping_method_processor(message: Message):
         return
     orderservice.make_an_order(user_id)
     if strings.get_string('go_to_menu', language) in message.text:
-        back_to_the_catalog(chat_id, language)
+        botutils.to_main_menu(chat_id, language)
     elif strings.from_order_shipping_method(Order.ShippingMethods.PICK_UP, language) in message.text:
         orderservice.set_shipping_method(user_id, Order.ShippingMethods.PICK_UP)
         _to_the_payment_method(chat_id, language, user_id)
@@ -144,7 +145,7 @@ def payment_method_processor(message: Message):
         error()
         return
     if strings.get_string('go_to_menu', language) in message.text:
-        back_to_the_catalog(chat_id, language)
+        botutils.to_main_menu(chat_id, language)
     elif strings.get_string('go_back', language) in message.text:
         if current_order.shipping_method == Order.ShippingMethods.PICK_UP:
             _to_the_shipping_method(chat_id, language)
@@ -204,7 +205,7 @@ def address_processor(message: Message):
 
     if message.text:
         if strings.get_string('go_back', language) in message.text:
-            back_to_the_catalog(chat_id, language)
+            botutils.to_main_menu(chat_id, language)
             return
         orderservice.set_address_by_string(user_id, message.text)
         _to_the_payment_method(chat_id, language, user_id)
@@ -237,13 +238,13 @@ def confirmation_processor(message: Message, **kwargs):
         user = userservice.get_user_by_telegram_id(user_id)
         order = orderservice.confirm_order(user_id, user.full_user_name, total)
         order_success_message = strings.get_string('order.success', language)
-        back_to_the_catalog(chat_id, language, order_success_message)
+        botutils.to_main_menu(chat_id, language, order_success_message)
         notify_new_order(order, total)
     elif strings.get_string('order.cancel', language) in message.text:
         order_canceled_message = strings.get_string('order.canceled', language)
         if 'message_id' in kwargs:
             invoice_message_id = kwargs.get('message_id')
             bot.delete_message(chat_id, invoice_message_id)
-        back_to_the_catalog(chat_id, language, order_canceled_message)
+        botutils.to_main_menu(chat_id, language, order_canceled_message)
     else:
         error()
