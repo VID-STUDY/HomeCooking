@@ -1,5 +1,5 @@
 from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton
-from application.resources.strings import get_string, from_order_shipping_method, from_order_payment_method
+from application.resources.strings import get_string, from_order_shipping_method, from_order_payment_method, get_pavalions, get_footer_blocks, get_clothes_blocks
 from application.core.models import Order
 
 _keyboards_ru = {
@@ -155,11 +155,33 @@ def from_change_language(current_language: str) -> ReplyKeyboardMarkup:
     return change_language_keyboard
 
 
-def from_user_phone_number(language, phone_number: str = None) -> ReplyKeyboardMarkup:
+def from_user_phone_number(language, phone_number: str = None, go_back=True) -> ReplyKeyboardMarkup:
     phone_number_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     if phone_number and phone_number != '':
         phone_number_keyboard.add(phone_number)
     phone_button = KeyboardButton(get_string('my_number', language), request_contact=True)
     phone_number_keyboard.add(phone_button)
-    phone_number_keyboard.add(get_string('go_back', language))
+    if go_back:
+        phone_number_keyboard.add(get_string('go_back', language))
     return phone_number_keyboard
+
+
+def get_pavilions_keyboard(language: str) ->  ReplyKeyboardMarkup:
+    pavilions = get_pavalions(language)
+    pavilions_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    pavilions_keyboard.add(*pavilions)
+    return pavilions_keyboard
+
+
+def get_footer_blocks_keyboard(language: str) -> ReplyKeyboardMarkup:
+    footer_blocks = get_footer_blocks(language)
+    footer_blocks_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    footer_blocks_keyboard.add(*footer_blocks)
+    return footer_blocks_keyboard
+
+
+def get_clothes_blocks_ketboard(language: str) -> ReplyKeyboardMarkup:
+    clothes_blocks = get_clothes_blocks(language)
+    clothes_blocks_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    clothes_blocks_keyboard.add(*clothes_blocks)
+    return clothes_blocks_keyboard

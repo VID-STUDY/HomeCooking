@@ -195,3 +195,58 @@ def from_dish_name(dish: Dish, language):
 def from_order_items_to_labeled_prices(order_items: List[OrderItem], language) -> List[LabeledPrice]:
     currency_value = settings.get_currency_value()
     return [LabeledPrice(from_dish_name(oi.dish, language) + ' x ' + str(oi.count), oi.count * oi.dish.price * currency_value * 100) for oi in order_items]
+
+
+def get_pavalions(language: str):
+    if language == 'uz':
+        return [
+            '1 Павильон', '2 Павильон', '3 Павильон', '4 Павильон',
+            '5 Павильон', '7 Павильон', 'Kiyim Kechak', 'Yerto`la'
+        ]
+    else:
+        return [
+            '1 Павильон', '2 Павильон', '3 Павильон', '4 Павильон',
+            '5 Павильон', '7 Павильон', 'Одежда', 'Подвал'
+        ]
+
+
+def get_footer_blocks(language: str):
+    if language == 'uz':
+        return [
+            '1 Blok', '2 Blok', '3 Blok', '4 Blok',
+            '5 Blok', '6 Blok', '7 Blok', '8 Blok',
+            '9 Blok',
+        ]
+    else:
+        return [
+            '1 Блок', '2 Блок', '3 Блок', '4 Блок',
+            '5 Блок', '6 Блок', '7 Блок', '8 Блок',
+            '9 Блок',
+        ]
+
+
+def get_clothes_blocks(language: str):
+    if language == 'uz':
+        return [
+            '1 Blok', '2 Blok', '3 Blok', '4 Blok',
+            '5 Blok', '6 Blok'
+        ]
+    else:
+        return [
+            '1 Блок', '2 Блок', '3 Блок', '4 Блок',
+            '5 Блок', '6 Блок'
+        ]
+
+
+def check_footer_pavilion(pavilion: str, language: str):
+    if language == 'uz':
+        return pavilion == 'Yerto`la'
+    else:
+        return pavilion == 'Подвал'
+
+
+def check_clothes_pavilion(pavilion: str, language: str):
+    if language == 'uz':
+        return pavilion == 'Kiyim Kechak'
+    else:
+        return pavilion == 'Одежда'
