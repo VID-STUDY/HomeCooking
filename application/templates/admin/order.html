@@ -11,10 +11,10 @@
             <div class="box">
                 <div class="box-header order-details">
                     {% if order.delivery_price %}
-                        <p>Общая стоимость заказа (без учёта стоиомсти доставки): <strong>{{ total_sum|price }} $ </strong></p>
-                        <p>Стоимость доставки: <strong>{{ order.delivery_price|price }} $</strong></p>
+                        <p>Общая стоимость заказа (без учёта стоиомсти доставки): <strong>{{ total_sum|price }} сум </strong></p>
+                        <p>Стоимость доставки: <strong>{{ order.delivery_price|price }} сум</strong></p>
                     {% else %}
-                        <p>Общая стоимость заказа: <strong>{{ total_sum|price }} $ </strong></p>
+                        <p>Общая стоимость заказа: <strong>{{ total_sum|price }} сум </strong></p>
                     {% endif %}
                     {% if order.address_txt or order.location %}
                         <p>Адрес доставки: <strong>{% if order.address_txt %}{{ order.address_txt }}{% elif order.location %}{{ order.location.address }}{% endif %}</strong></p>
@@ -42,7 +42,7 @@
                                     <td>{{ loop.index }}</td>
                                     <td>{{ order_item.dish.name }} | {{ order_item.dish.name_uz }}</td>
                                     <td>{{ order_item.count }}</td>
-                                    <td>{{ (order_item.dish.price * order_item.count)|price }} $</td>
+                                    <td>{{ (order_item.dish.price * order_item.count)|price }} сум</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
