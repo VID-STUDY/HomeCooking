@@ -97,7 +97,13 @@ def order_processor(message: Message):
         cart_empty_message = strings.get_string('cart.empty', language)
         botutils.to_main_menu(chat_id, language, cart_empty_message)
         return
-    _to_the_address(chat_id, language)
+    user = userservice.get_user_by_telegram_id(chat_id)
+    orderservice.make_an_order(user_id)
+    orderservice.set_shipping_method(user_id, Order.ShippingMethods.DELIVERY)
+    orderservice.set_address_by_string(user_id, user.shop_address)
+    orderservice.set_phone_number(user_id, user.phone_number)
+    order = orderservice.set_payment_method(user_id, Order.PaymentMethods.CASH)
+    _to_the_confirmation(chat_id, order, language)
 
 
 def shipping_method_processor(message: Message):
@@ -199,9 +205,6 @@ def address_processor(message: Message):
         error_msg = strings.get_string('order.address_error')
         bot.send_message(chat_id, error_msg, parse_mode='HTML')
         bot.register_next_step_handler_by_chat_id(chat_id, address_processor)
-
-    orderservice.make_an_order(user_id)
-    orderservice.set_shipping_method(user_id, Order.ShippingMethods.DELIVERY)
 
     if message.text:
         if strings.get_string('go_back', language) in message.text:

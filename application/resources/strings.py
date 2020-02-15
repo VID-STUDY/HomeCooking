@@ -86,13 +86,6 @@ def from_order(order: Order, language: str, total: int) -> str:
     order_content += '\n\n'
     order_content += '<b>{phone}:</b> {phone_value}\n'.format(phone=get_string('phone', language),
                                                               phone_value=order.phone_number)
-    order_content += '<b>{payment_type}:</b> {payment_type_value}\n' \
-        .format(payment_type=get_string('payment', language),
-                payment_type_value=from_order_payment_method(order.payment_method, language))
-    order_content += '<b>{shipping_method}:</b> {shipping_method_value}\n'.format(
-        shipping_method=get_string('shipping_method', language),
-        shipping_method_value=from_order_shipping_method(order.shipping_method, language)
-    )
     if order.address_txt:
         order_content += '<b>{address}:</b> {address_value}'.format(address=get_string('address', language),
                                                                     address_value=order.address_txt)
@@ -116,18 +109,6 @@ def from_order(order: Order, language: str, total: int) -> str:
     order_content += "<b>{}</b>: {} {}".format(get_string('cart.summary', language),
                                                _format_number(total),
                                                get_string('sum', language))
-    if not order.delivery_price and order.address_txt:
-        order_content += '\n\n'
-        order_content += '<i>{}</i>'.format(get_string('delivery_price_without_location', language))
-    if order.delivery_price:
-        order_content += '\n\n'
-        order_content += '<i>{}</i>: {} {}'.format(get_string('delivery_price', language),
-                                                   _format_number(order.delivery_price),
-                                                   get_string('sum', language))
-        order_content += '\n\n'
-        order_content += '<i>{}</i>'.format(get_string('order.delivery_price_helper', language))
-    order_content += '\n\n'
-    order_content += get_string('order.delivery_time', language)
     return order_content
 
 

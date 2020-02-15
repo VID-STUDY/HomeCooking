@@ -93,6 +93,7 @@ def set_payment_method(user_id: int, payment_method: str):
     current_order = get_current_order_by_user(user_id)
     current_order.payment_method = payment_method
     db.session.commit()
+    return current_order
 
 
 def set_address_by_string(user_id: int, address: str):
