@@ -19,7 +19,7 @@
     <!-- Google Font -->
   <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-    <title>{% if title %} {{ title }} {% else %} Административная панель {% endif %} | Доставка</title>
+    <title>{% if title %} {{ title }} {% else %} Административная панель {% endif %}</title>
 </head>
 <body class="hold-transition skin-yellow sidebar-mini">
     <div class="wrapper">
@@ -54,14 +54,9 @@
                 <!-- Sidebar menu -->
                 <ul class="sidebar-menu">
                     <li class="header">НАВИГАЦИЯ</li>
-                    <li class="{% if area == 'catalog' %}active{% endif %}"><a href="{{ url_for('admin.catalog') }}"><i class="fa fas fa-stream"></i> <span>Каталог</span></a></li>
                     <li class="{% if area == 'orders' %}active{% endif %}"><a href="{{ url_for('admin.orders') }}"><i class="fa fas fa-clipboard-list"></i> <span>Заказы</span></a></li>
                     <li class="{% if area == 'users' %}active{% endif %}"><a href="{{ url_for('admin.users') }}"><i class="fa fas fa-users"></i> <span>Клиенты</span></a></li>
-                    <li class="{% if area == 'map' %}active{% endif %}"><a href="{{ url_for('admin.orders_map') }}"><i class="fa fas fa-map-marked-alt"></i> <span>Карта заказов</span></a></li>
-                    <li class="{% if area == 'comments' %}active{% endif %}"><a href="{{ url_for('admin.comments') }}"><i class="fa fas fa-comments"></i><span>Отзывы</span></a></li>
-                    <li class="{% if area == 'settings' %}active{% endif %}"><a href="{{ url_for('admin.settings') }}"><i class="fa fas fa-cogs"></i> <span>Настройки</span></a></li>
                     <li class="{% if area == 'admin' %}active{% endif %}"><a href="{{ url_for('admin.administrator') }}"><i class="fa fas fa-user-cog"></i> <span>Администратор</span></a></li>
-                    <li class="{% if area == 'requests' %}active{% endif %}"><a href="{{ url_for('admin.list_requests') }}"><i class="fas fa-question-circle"></i> <span>Запросы на регистрацию</span></a></li>
                 </ul>
             </section>
         </aside>
