@@ -5,11 +5,6 @@
     <li class="active">Клиенты</li>
 {% endblock %}
 {% block content %}
-    <div class="row add-button">
-        <div class="col-xs-4">
-            <a href="{{ url_for('admin.create_user') }}" class="btn btn-flat bg-orange"><i class="fas fa-plus"></i>Добавить пользователя</a>
-        </div>
-    </div>
     <div class="row">
         <div class="col-xs-12">
             <div class="box">
@@ -29,6 +24,7 @@
                                 <th>Имя</th>
                                 <th>Юзернэйм</th>
                                 <th>Номер телефона</th>
+                                <th>Адрес</th>
                                 <th>Дата регистрации</th>
                                 <th>Действия</th>
                             </tr>
@@ -55,6 +51,13 @@
                                         {% endif %}
                                     </td>
                                     <td>
+                                        {% if user.shop_address %}
+                                            {{ user.shop_address }}
+                                        {% else %}
+                                            UNK
+                                        {% endif %}
+                                    </td>
+                                    <td>
                                         {% if user.registration_date %}
                                             {{ user.registration_date|datetime(convert_from_utc=True) }}
                                         {% else %}
@@ -62,7 +65,6 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-flat bg-orange"><i class="fas fa-edit"></i></a>
                                         <a href="{{ url_for('admin.remove_user', user_id=user.id) }}" onclick="return confirm('Вы уверены?')" class="btn btn-danger btn-flat"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
