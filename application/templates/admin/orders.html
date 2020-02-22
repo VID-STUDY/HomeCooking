@@ -20,7 +20,8 @@
                                 <th>Номер телефона</th>
                                 <th>Имя покупателя</th>
                                 <th>Способ оплаты</th>
-                                <th>Стоимость доставки, сум</th>
+                                <th>Адрес</th>
+                                <th>Содержимое</th>
                                 <th>Стоимость заказа, сум</th>
                                 <th>Действия</th>
                             </tr>
@@ -40,11 +41,29 @@
                                     </td>
                                     <td>{{ order.payment_method|payment_method }}</td>
                                     <td>
-                                        {% if order.delivery_price %}
-                                            {{ order.delivery_price|price }}
+                                        {% if order.address_txt %}
+                                            {{ order.address_txt }}
                                         {% else %}
                                             -
                                         {% endif %}
+                                    </td>
+                                    <td>
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Название</th>
+                                                    <th>Цена</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for order_item in order.order_items.all() %}
+                                                    <tr>
+                                                        <td>{{ order_item.dish.name }}, {{ order_item.count }} шт</td>
+                                                        <td>{{ (order_item.dish.price * order_item.count)|price }} сум</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </td>
                                     <td>
                                         {% if order.total_amount %}
