@@ -233,8 +233,7 @@ def welcome(message):
 
     current_user = userservice.get_user_by_telegram_id(user_id)
     if current_user:
-        botutils.to_main_menu(chat_id, current_user.language)
-        return
+        userservice.remove_user(user_id)
     welcome_message = strings.get_string('welcome');
     language_keyboard = keyboards.get_keyboard('welcome.language')
     telegram_bot.send_message(chat_id, welcome_message, reply_markup=language_keyboard, parse_mode='HTML')

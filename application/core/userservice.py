@@ -57,7 +57,7 @@ def update_user(user_id, name, phone_number):
 
 
 def remove_user(user_id):
-    db.session.delete(get_user_by_id(user_id))
+    db.session.delete(get_user_by_telegram_id(user_id))
     db.session.commit()
 
 
