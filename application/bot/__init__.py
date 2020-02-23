@@ -17,7 +17,7 @@ if 'PRODUCTION' in os.environ:
         if request.headers.get('content-type') == 'application/json':
             json_string = request.get_data().decode('utf-8')
             update = telebot.types.Update.de_json(json_string)
-            if update.message.text and '/start' in update.message.text:
+            if update.message and update.message.text and '/start' in update.message.text:
                 from .registration import welcome
                 welcome(update.message)
             else:
