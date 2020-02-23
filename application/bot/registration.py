@@ -2,8 +2,60 @@ from application import telegram_bot
 from application.core import userservice
 from application.resources import strings, keyboards
 from application.utils import bot as botutils
-from telebot.types import Message
+from telebot.types import Message, CallbackQuery
 import re
+
+
+users_data = {}
+
+
+def delete_message_handler(message: Message):
+    telegram_bot.delete_message(message.chat.id, message.message_id)
+    telegram_bot.register_next_step_handler_by_chat_id(message.chat.id, delete_message_handler)
+
+
+@telegram_bot.callback_query_handler(func=lambda query: 'address' in query.data)
+def address_inline_handler(query: CallbackQuery):
+    if query.from_user.id not in users_data:
+        return
+    data = query.data.split(':')
+
+    shop_number = data[1]
+    user_data = users_data[query.from_user.id]
+    if 'confirm' in shop_number:
+        if 'shop_number' not in user_data or user_data['shop_number'] == '':
+            telegram_bot.answer_callback_query(query.id, strings.get_string('registration.shop_number_required'))
+            return
+        if 'block' in user_data:
+            shop_address = '{}, {} - {}'.format(user_data['pavilion'], user_data['block'], user_data['shop_number'])
+        else:
+            shop_address = '{}, {}'.format(user_data['pavilion'], user_data['shop_number'])
+
+        username = query.message.from_user.username
+        userservice.register_user(query.message.chat.id, username, user_data['name'], user_data['phone_number'],
+                                  user_data['language'], shop_address)
+        telegram_bot.edit_message_text(strings.get_string('registration.shop_number.success', user_data['language']),
+                                       query.message.chat.id, query.message.message_id)
+        success_message = strings.get_string("welcome.registration_successfully", user_data['language'])
+        telegram_bot.clear_step_handler_by_chat_id(query.message.chat.id)
+        botutils.to_main_menu(query.message.chat.id, user_data['language'], success_message)
+    elif 'delete' in shop_number:
+        if 'shop_number' in user_data:
+            user_data['shop_number'] = user_data['shop_number'][:-1]
+        address_message = strings.get_string('registration.shop_number', language=user_data['language']).format(
+            user_data['shop_number'])
+        address_keyboard = keyboards.get_address_inline_keyboard(user_data['language'])
+        telegram_bot.edit_message_text(address_message, query.from_user.id, query.message.message_id, parse_mode='HTML',
+                                       reply_markup=address_keyboard)
+    else:
+        if 'shop_number' in user_data:
+            user_data['shop_number'] += shop_number
+        else:
+            user_data['shop_number'] = shop_number
+        address_message = strings.get_string('registration.shop_number', language=user_data['language']).format(
+            user_data['shop_number'])
+        address_keyboard = keyboards.get_address_inline_keyboard(user_data['language'])
+        telegram_bot.edit_message_text(address_message, query.from_user.id, query.message.message_id, parse_mode='HTML', reply_markup=address_keyboard)
 
 
 def request_registration_phone_number_handler(message: Message, **kwargs):
@@ -65,11 +117,16 @@ def pavilion_handler(message: Message, **kwargs):
         telegram_bot.register_next_step_handler_by_chat_id(chat_id, block_handler, language=language, name=name, 
                                                            phone_number=phone_number, pavilion=pavilion, pavilion_type=pavilion_type)
     else:
-        shop_address_message = strings.get_string('registration.shop_number', language)
-        remove_keyboard = keyboards.get_keyboard('remove')
-        telegram_bot.send_message(chat_id, shop_address_message, reply_markup=remove_keyboard)
-        telegram_bot.register_next_step_handler_by_chat_id(chat_id, shop_handler, language=language, name=name, phone_number=phone_number, pavilion=pavilion)
-    
+        shop_address_message = strings.get_string('registration.shop_number', language).format('')
+        address_keyboard = keyboards.get_address_inline_keyboard(language)
+        telegram_bot.send_message(chat_id, shop_address_message, reply_markup=address_keyboard, parse_mode='HTML')
+        users_data[chat_id] = {
+            'language': language,
+            'name': name,
+            'phone_number': phone_number,
+            'pavilion': pavilion
+        }
+        telegram_bot.register_next_step_handler_by_chat_id(chat_id, delete_message_handler)
 
 
 def block_handler(message: Message, **kwargs):
@@ -97,10 +154,17 @@ def block_handler(message: Message, **kwargs):
     if block not in blocks_list:
         error()
         return
-    shop_address_message = strings.get_string('registration.shop_number', language)
-    remove_keyboard = keyboards.get_keyboard('remove')
-    telegram_bot.send_message(chat_id, shop_address_message, reply_markup=remove_keyboard)
-    telegram_bot.register_next_step_handler_by_chat_id(chat_id, shop_handler, language=language, name=name, phone_number=phone_number, pavilion=pavilion, block=block)
+    shop_address_message = strings.get_string('registration.shop_number', language).format('')
+    address_keyboard = keyboards.get_address_inline_keyboard(language)
+    telegram_bot.send_message(chat_id, shop_address_message, reply_markup=address_keyboard, parse_mode='HTML')
+    users_data[chat_id] = {
+        'language': language,
+        'name': name,
+        'phone_number': phone_number,
+        'pavilion': pavilion,
+        'block': block
+    }
+    telegram_bot.register_next_step_handler_by_chat_id(chat_id, delete_message_handler)
 
 
 def shop_handler(message: Message, **kwargs):

@@ -1,4 +1,4 @@
-from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton
+from telebot.types import ReplyKeyboardMarkup, ReplyKeyboardRemove, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 from application.resources.strings import get_string, from_order_shipping_method, from_order_payment_method, get_pavalions, get_footer_blocks, get_clothes_blocks
 from application.core.models import Order
 
@@ -179,20 +179,32 @@ def from_user_phone_number(language, phone_number: str = None, go_back=True) -> 
 
 def get_pavilions_keyboard(language: str) ->  ReplyKeyboardMarkup:
     pavilions = get_pavalions(language)
-    pavilions_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    pavilions_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2, one_time_keyboard=True)
     pavilions_keyboard.add(*pavilions)
     return pavilions_keyboard
 
 
 def get_footer_blocks_keyboard(language: str) -> ReplyKeyboardMarkup:
     footer_blocks = get_footer_blocks(language)
-    footer_blocks_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    footer_blocks_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2, one_time_keyboard=True)
     footer_blocks_keyboard.add(*footer_blocks)
     return footer_blocks_keyboard
 
 
 def get_clothes_blocks_ketboard(language: str) -> ReplyKeyboardMarkup:
     clothes_blocks = get_clothes_blocks(language)
-    clothes_blocks_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    clothes_blocks_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2, one_time_keyboard=True)
     clothes_blocks_keyboard.add(*clothes_blocks)
     return clothes_blocks_keyboard
+
+
+def get_address_inline_keyboard(language: str) -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    buttons_1_9 = [InlineKeyboardButton(number, callback_data=f'address:{number}') for number in range(1, 10)]
+    markup.add(*buttons_1_9)
+    markup.add(InlineKeyboardButton(get_string('registration.shop_number.confirm', language),
+                                    callback_data='address:confirm'),
+               InlineKeyboardButton('0', callback_data='address:0'),
+               InlineKeyboardButton(get_string('registration.shop_number.delete', language),
+                                    callback_data='address:delete'))
+    return markup
