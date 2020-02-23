@@ -31,7 +31,7 @@ def address_inline_handler(query: CallbackQuery):
         else:
             shop_address = '{}, {}'.format(user_data['pavilion'], user_data['shop_number'])
 
-        username = query.message.from_user.username
+        username = user_data['username']
         userservice.register_user(query.message.chat.id, username, user_data['name'], user_data['phone_number'],
                                   user_data['language'], shop_address)
         telegram_bot.edit_message_text(strings.get_string('registration.shop_number.success', user_data['language']),
@@ -124,7 +124,8 @@ def pavilion_handler(message: Message, **kwargs):
             'language': language,
             'name': name,
             'phone_number': phone_number,
-            'pavilion': pavilion
+            'pavilion': pavilion,
+            'username': message.from_user.username
         }
         telegram_bot.register_next_step_handler_by_chat_id(chat_id, delete_message_handler)
 
@@ -162,7 +163,8 @@ def block_handler(message: Message, **kwargs):
         'name': name,
         'phone_number': phone_number,
         'pavilion': pavilion,
-        'block': block
+        'block': block,
+        'username': message.from_user.username
     }
     telegram_bot.register_next_step_handler_by_chat_id(chat_id, delete_message_handler)
 
