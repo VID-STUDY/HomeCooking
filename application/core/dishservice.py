@@ -156,14 +156,14 @@ def get_dishes_from_category(category: DishCategory, sort_by_number: bool = Fals
 def get_dish_by_name(name: str, language: str, category: DishCategory = None) -> Dish:
     if language == 'uz':
         if category:
-            dish = Dish.query.filter(Dish.name_uz == name, Dish.category_id == category.id).first()
+            dish = Dish.query.filter(Dish.name_uz.like(name + '%'), Dish.category_id == category.id).first()
         else:
-            dish = Dish.query.filter(Dish.name_uz == name).first()
+            dish = Dish.query.filter(Dish.name_uz.like(name + '%')).first()
     else:
         if category:
-            dish = Dish.query.filter(Dish.name == name, Dish.category_id == category.id).first()
+            dish = Dish.query.filter(Dish.name.like(name + '%'), Dish.category_id == category.id).first()
         else:
-            dish = Dish.query.filter(Dish.name == name).first()
+            dish = Dish.query.filter(Dish.name.like(name + '%')).first()
     return dish
 
 
