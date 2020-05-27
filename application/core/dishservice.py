@@ -54,7 +54,10 @@ def create_dish(name_ru, name_uz, description_ru, description_uz, image, price, 
     dish = Dish(name=name_ru, name_uz=name_uz,
                 description=description_ru, description_uz=description_uz,
                 price=price, category_id=category_id)
-    if image and image.filename != '':
+    if type(image) is str:
+        file_path = os.path.join(Config.UPLOAD_DIRECTORY, image)
+        dish.image_path = file_path
+    elif image and image.filename != '':
         file_path = os.path.join(Config.UPLOAD_DIRECTORY, image.filename)
         files.save_file(image, file_path, recreate=True)
         dish.image_path = file_path
