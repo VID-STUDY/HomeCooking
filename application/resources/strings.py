@@ -194,4 +194,4 @@ def from_dish_name(dish: Dish, language):
 
 def from_order_items_to_labeled_prices(order_items: List[OrderItem], language) -> List[LabeledPrice]:
     currency_value = settings.get_currency_value()
-    return [LabeledPrice(from_dish_name(oi.dish, language) + ' x ' + str(oi.count), oi.count * oi.dish.price * currency_value * 100) for oi in order_items]
+    return [LabeledPrice(from_dish_name(oi.dish, language) + ' x ' + str(oi.count), int(oi.count * oi.dish.price * currency_value * 100)) for oi in order_items]
