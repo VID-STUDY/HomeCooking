@@ -16,7 +16,7 @@ def get_user_by_id(user_id):
 
 
 def get_user_by_telegram_id(telegram_id: int):
-    return User.query.filter(User.telegram_id == telegram_id).first()
+    return User.query.get(telegram_id)
 
 
 def get_user_by_token(token: str):
@@ -89,7 +89,7 @@ def is_user_registered(user_id):
 
 
 def get_user_language(user_id: int):
-    user = get_user_by_telegram_id(user_id)
+    user = get_user_by_id(user_id)
     return user.language
 
 

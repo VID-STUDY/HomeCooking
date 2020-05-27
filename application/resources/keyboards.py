@@ -46,6 +46,7 @@ _keyboards_ru['order.address'] = _order_location_keyboard_ru
 
 _order_payment_keyboard_ru = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
 _order_payment_keyboard_ru.add(from_order_payment_method(Order.PaymentMethods.CASH, 'ru'),
+                               from_order_payment_method(Order.PaymentMethods.PAYME, 'ru'),
                                get_string('go_back'), get_string('go_to_menu'))
 _keyboards_ru['order.payment'] = _order_payment_keyboard_ru
 
@@ -86,6 +87,7 @@ _order_location_keyboard_uz.add(get_string('go_back', 'uz'))
 _keyboards_uz['order.address'] = _order_location_keyboard_uz
 _order_payment_keyboard_uz = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
 _order_payment_keyboard_uz.add(from_order_payment_method(Order.PaymentMethods.CASH, 'uz'),
+                               from_order_payment_method(Order.PaymentMethods.PAYME, 'uz'),
                                get_string('go_back', 'uz'), get_string('go_to_menu', 'uz'))
 _keyboards_uz['order.payment'] = _order_payment_keyboard_uz
 _order_confirmation_keyboard_uz = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
@@ -155,11 +157,12 @@ def from_change_language(current_language: str) -> ReplyKeyboardMarkup:
     return change_language_keyboard
 
 
-def from_user_phone_number(language, phone_number: str = None) -> ReplyKeyboardMarkup:
+def from_user_phone_number(language, phone_number: str = None, go_back: bool = True) -> ReplyKeyboardMarkup:
     phone_number_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     if phone_number and phone_number != '':
         phone_number_keyboard.add(phone_number)
     phone_button = KeyboardButton(get_string('my_number', language), request_contact=True)
     phone_number_keyboard.add(phone_button)
-    phone_number_keyboard.add(get_string('go_back', language))
+    if go_back:
+        phone_number_keyboard.add(get_string('go_back', language))
     return phone_number_keyboard
