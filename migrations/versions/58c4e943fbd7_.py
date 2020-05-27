@@ -91,7 +91,7 @@ def upgrade():
     sa.Column('description', sa.String(length=500), nullable=True),
     sa.Column('description_uz', sa.String(length=500), nullable=True),
     sa.Column('is_hidden', sa.Boolean(), nullable=True),
-    sa.Column('price', sa.Integer(), nullable=True),
+    sa.Column('price', sa.Float(), nullable=True),
     sa.Column('number', sa.Integer(), nullable=True),
     sa.Column('category_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['category_id'], ['dish_categories.id'], ),

@@ -121,7 +121,7 @@ class Dish(db.Model):
     description = db.Column(db.String(500))
     description_uz = db.Column(db.String(500))
     is_hidden = db.Column(db.Boolean, default=False)
-    price = db.Column(db.Integer)
+    price = db.Column(db.Float)
     number = db.Column(db.Integer, default=1)
     category_id = db.Column(db.Integer, db.ForeignKey('dish_categories.id'))
 
