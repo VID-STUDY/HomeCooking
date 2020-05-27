@@ -18,9 +18,12 @@ def check_catalog(message: Message):
     return strings.get_string('main_menu.make_order', language) in message.text and 'private' in message.chat.type
 
 
-def back_to_the_catalog(chat_id, language, parent_category=None):
+def back_to_the_catalog(chat_id, language, message_text=None, parent_category=None):
     bot.send_chat_action(chat_id, 'typing')
-    catalog_message = strings.get_string('catalog.start', language)
+    if not message_text:
+        catalog_message = strings.get_string('catalog.start', language)
+    else:
+        catalog_message = message_text
     if parent_category:
         catalog_message = strings.from_category_name(parent_category, language)
         categories = parent_category.get_siblings(include_self=True).all()
@@ -84,7 +87,7 @@ def choose_dish_processor(message: Message, **kwargs):
     if strings.get_string('go_back', language) in message.text:
         if 'category' in kwargs:
             category = kwargs.get('category')
-            back_to_the_catalog(chat_id, language, category)
+            back_to_the_catalog(chat_id, language, parent_category=category)
             return
         back_to_the_catalog(chat_id, language)
     elif strings.get_string('catalog.cart', language) in message.text:
@@ -137,7 +140,7 @@ def catalog_processor(message: Message, **kwargs):
         if not parent_category:
             botutils.to_main_menu(chat_id, language)
             return
-        back_to_the_catalog(chat_id, language, parent_category)
+        back_to_the_catalog(chat_id, language, parent_category=parent_category)
     elif strings.get_string('catalog.cart', language) in message.text:
         cart.cart_processor(message)
     elif strings.get_string('catalog.make_order', language) in message.text:
