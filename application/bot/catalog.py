@@ -134,6 +134,9 @@ def catalog_processor(message: Message, **kwargs):
         return
     if strings.get_string('go_back', language) in message.text:
         parent_category = kwargs.get('parent_category', None)
+        if not parent_category:
+            botutils.to_main_menu(chat_id, language)
+            return
         back_to_the_catalog(chat_id, language, parent_category)
     elif strings.get_string('catalog.cart', language) in message.text:
         cart.cart_processor(message)
