@@ -18,12 +18,9 @@ def check_catalog(message: Message):
     return strings.get_string('main_menu.make_order', language) in message.text and 'private' in message.chat.type
 
 
-def back_to_the_catalog(chat_id, language, message_txt=None, parent_category=None):
+def back_to_the_catalog(chat_id, language, parent_category=None):
     bot.send_chat_action(chat_id, 'typing')
-    if not message_txt:
-        catalog_message = strings.get_string('catalog.start', language)
-    else:
-        catalog_message = message_txt
+    catalog_message = strings.get_string('catalog.start', language)
     if parent_category:
         catalog_message = strings.from_category_name(parent_category, language)
         categories = parent_category.get_siblings(include_self=True).all()
@@ -87,8 +84,7 @@ def choose_dish_processor(message: Message, **kwargs):
     if strings.get_string('go_back', language) in message.text:
         if 'category' in kwargs:
             category = kwargs.get('category')
-            catalog_message = strings.from_category_name(category, language)
-            back_to_the_catalog(chat_id, language, catalog_message, category)
+            back_to_the_catalog(chat_id, language, category)
             return
         back_to_the_catalog(chat_id, language)
     elif strings.get_string('catalog.cart', language) in message.text:
@@ -137,22 +133,15 @@ def catalog_processor(message: Message, **kwargs):
         error()
         return
     if strings.get_string('go_back', language) in message.text:
-        if 'parent_category' in kwargs:
-            parent_category = kwargs.get('parent_category')
-            catalog_message = strings.from_category_name(parent_category, language)
-            back_to_the_catalog(chat_id, language, catalog_message, parent_category)
-        else:
-            botutils.to_main_menu(chat_id, language)
+        parent_category = kwargs.get('parent_category', None)
+        back_to_the_catalog(chat_id, language, parent_category)
     elif strings.get_string('catalog.cart', language) in message.text:
         cart.cart_processor(message)
     elif strings.get_string('catalog.make_order', language) in message.text:
         orders.order_processor(message)
     else:
         category_name = message.text
-        if 'parent_category' in kwargs:
-            category = dishservice.get_category_by_name(category_name, language, kwargs.get('parent_category'))
-        else:
-            category = dishservice.get_category_by_name(category_name, language)
+        category = dishservice.get_category_by_name(category_name, language)
         if not category:
             error()
             return
