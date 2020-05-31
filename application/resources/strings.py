@@ -35,12 +35,12 @@ def from_cart_items(cart_items, language, total) -> str:
     cart_str_item = "<b>{name}</b>\n{count} x {price} = {sum}"
     for cart_item in cart_items:
         if language == 'uz':
-            dish_item = cart_str_item.format(name=cart_item.dish.name_uz,
+            dish_item = cart_str_item.format(name=cart_item.dish.get_full_name_uz(),
                                              count=cart_item.count,
                                              price=_format_number(cart_item.dish.price),
                                              sum=_format_number(cart_item.count * cart_item.dish.price))
         else:
-            dish_item = cart_str_item.format(name=cart_item.dish.name,
+            dish_item = cart_str_item.format(name=cart_item.dish.get_full_name(),
                                              count=cart_item.count,
                                              price=_format_number(cart_item.dish.price),
                                              sum=_format_number(cart_item.count * cart_item.dish.price))
