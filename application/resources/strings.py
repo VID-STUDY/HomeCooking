@@ -104,9 +104,9 @@ def from_order(order: Order, language: str, total: int) -> str:
     for order_item in order.order_items.all():
         dish = order_item.dish
         if language == 'uz':
-            dish_name = dish.name_uz
+            dish_name = dish.get_full_name_uz()
         else:
-            dish_name = dish.name
+            dish_name = dish.get_full_name()
         order_item_str = order_item_tmpl.format(name=dish_name,
                                                 count=order_item.count,
                                                 price=_format_number(dish.price),
@@ -153,7 +153,7 @@ def from_order_notification(order: Order, total_sum):
     for category, ois in grouped_order_items.items():
         group_content = '<b>%s</b>:\n' % category
         for order_item in ois:
-            group_content += order_item_tmpl.format(name=order_item.dish.name,
+            group_content += order_item_tmpl.format(name=order_item.dish.get_full_name(),
                                                     count=order_item.count,
                                                     price=_format_number(order_item.dish.price),
                                                     sum=_format_number(order_item.dish.price * order_item.count))
