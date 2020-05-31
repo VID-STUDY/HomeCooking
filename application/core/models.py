@@ -111,20 +111,20 @@ class DishCategory(db.Model, BaseNestedSets):
         name = self.name
         if self.parent:
             name = self.parent.name + ' ' + name
-        if self.parent.parent:
-            name = self.parent.parent.name + ' ' + name
-        if self.parent.parent.parent:
-            name = self.parent.parent.parentname + ' ' + name
+            if self.parent.parent:
+                name = self.parent.parent.name + ' ' + name
+                if self.parent.parent.parent:
+                    name = self.parent.parent.parentname + ' ' + name
         return name
 
     def get_nested_names_uz(self):
         name = self.name_uz
         if self.parent:
             name = self.parent.name_uz + ' ' + name
-        if self.parent.parent:
-            name = self.parent.parent.name_uz + ' ' + name
-        if self.parent.parent.parent:
-            name = self.parent.parent.parent.name_uz + ' ' + name
+            if self.parent.parent:
+                name = self.parent.parent.name_uz + ' ' + name
+                if self.parent.parent.parent:
+                    name = self.parent.parent.parent.name_uz + ' ' + name
         return name
 
 
