@@ -56,9 +56,9 @@ def from_cart_items(cart_items, language, total) -> str:
 def from_dish(dish: Dish, language: str) -> str:
     dish_content = ""
     if language == 'uz':
-        dish_content += dish.name_uz
+        dish_content += dish.get_full_name_uz()
     else:
-        dish_content += dish.name
+        dish_content += dish.get_full_name()
     dish_content += '\n\n'
     if language == 'uz':
         if dish.description_uz:
