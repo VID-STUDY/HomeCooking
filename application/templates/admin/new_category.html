@@ -13,7 +13,7 @@
                     <h3 class="box-title">Новая категория</h3>
                 </div>
                 <div class="box-body">
-                    <form action="" method="post">
+                    <form action="" method="post" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
                         <div class="form-group {% if form.name_ru.errors|length > 0 %}has-error{% endif %}">
                             {{ form.name_ru(class='form-control', placeholder=form.name_ru.label.text) }}
