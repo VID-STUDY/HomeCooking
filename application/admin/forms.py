@@ -34,6 +34,7 @@ class DishForm(FlaskForm):
                       validators=[FileAllowed(['png', 'jpg'],
                                               message='Разрешены только изображения форматов .jpg, .png')])
     delete_image = BooleanField('Удалить изображение')
+    show_usd = BooleanField('Показывать цену в долларах')
     submit = SubmitField('Сохранить')
 
     def fill_from_object(self, dish: Dish):
@@ -43,6 +44,7 @@ class DishForm(FlaskForm):
         self.description_ru.data = dish.description
         self.category.data = dish.category_id
         self.price.data = dish.price
+        self.show_usd.data = dish.show_usd
 
     def validate_price(self, field):
         if not field.data.isdigit():
@@ -85,6 +87,8 @@ class DeliveryPriceForm(FlaskForm):
                             validators=[DataRequired('Укажите стоимость за остальные километры')])
     limit_price = StringField('Лимит стоимости доставки',
                               validators=[DataRequired('Укажите лимит цены на доставку')])
+    currency_value = StringField('Стоимость доллара, сум',
+                                 validators=[DataRequired('Укажите стоимость доллара в суммах')])
     submit = SubmitField('Сохранить')
 
     def validate_int_value(self, field):
@@ -99,6 +103,7 @@ class DeliveryPriceForm(FlaskForm):
         self.first_3_km.data = delivery_cost[0]
         self.others_km.data = delivery_cost[1]
         self.limit_price.data = settings.get_limit_delivery_price()
+        self.currency_value.data = settings.get_currency_value()
     
     def validate_first_3_km(self, field):
         self.validate_int_value(field)
@@ -107,6 +112,9 @@ class DeliveryPriceForm(FlaskForm):
         self.validate_int_value(field)
     
     def validate_limit_price(self, field):
+        self.validate_int_value(field)
+
+    def validate_currency_value(self, field):
         self.validate_int_value(field)
 
 

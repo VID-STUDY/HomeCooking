@@ -68,8 +68,13 @@ def from_dish(dish: Dish, language: str) -> str:
         if dish.description:
             dish_content += dish.description
             dish_content += '\n\n'
+    price = dish.price * settings.get_currency_value()
+    price_currency = 'sum'
+    if dish.show_usd:
+        price = dish.price
+        price_currency = 'usd'
     dish_content += "{}: {} {}".format(get_string('dish.price', language),
-                                       _format_number(dish.price), get_string('sum', language))
+                                       _format_number(price), get_string(price_currency, language))
     return dish_content
 
 

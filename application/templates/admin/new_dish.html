@@ -79,6 +79,13 @@
                                     {{ form.image }}
                                 </div>
                             </div>
+                            <div class="col-sm-12">
+                                <div class="checkbox">
+                                    <label>
+                                        {{ form.show_usd }} {{ form.show_usd.label.text }}
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-buttons">
                             <a href="{{ url_for('admin.catalog') }}" class="back-button btn btn-flat bg-orange"><i class="fas fa-long-arrow-alt-left"></i>Назад</a>
