@@ -108,7 +108,7 @@ def upgrade():
     sa.Column('confirmed', sa.Boolean(), nullable=True),
     sa.Column('confirmation_date', sa.DateTime(), nullable=True),
     sa.Column('delivery_price', sa.Integer(), nullable=True),
-    sa.Column('total_amount', sa.Integer(), nullable=True),
+    sa.Column('total_amount', sa.Float(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

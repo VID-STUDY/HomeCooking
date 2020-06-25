@@ -134,7 +134,7 @@ def set_phone_number(user_id: int, phone_number: str) -> Order:
     return current_order
 
 
-def confirm_order(user_id: int, user_name, total_amount: int):
+def confirm_order(user_id: int, user_name, total_amount: float):
     """
     Confirm order and let him show on admin panel
     :param user_id: User's Telegram-ID

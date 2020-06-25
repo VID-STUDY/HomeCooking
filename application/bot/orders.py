@@ -16,7 +16,7 @@ def pre_checkout_order_query_handler(query: PreCheckoutQuery):
     chat_id = user_id
     user = userservice.get_user_by_telegram_id(user_id)
     language = user.language
-    total = int(query.invoice_payload)
+    total = float(query.invoice_payload)
     order = orderservice.confirm_order(user_id, user.full_user_name, total)
     bot.answer_pre_checkout_query(query.id, ok=True)
     order_success_message = strings.get_string('order.success', language)

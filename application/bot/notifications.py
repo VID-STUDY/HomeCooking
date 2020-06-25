@@ -24,7 +24,7 @@ def notifications_handler(message: Message):
         telegram_bot.send_message(chat_id, exist_message)
 
 
-def notify_new_order(order: Order, total_sum: int):
+def notify_new_order(order: Order, total_sum: float):
     notification_chats = notifyservice.get_all_notification_chats()
     notification_message = strings.from_order_notification(order, total_sum)
     for chat in notification_chats:
