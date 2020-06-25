@@ -33,17 +33,18 @@ def from_cart_items(cart_items, language, total) -> str:
     cart_contains += '<b>{}</b>:'.format(get_string('catalog.cart', language))
     cart_contains += '\n\n'
     cart_str_item = "<b>{name}</b>\n{count} x {price} = {sum}"
+    currency_value = settings.get_currency_value()
     for cart_item in cart_items:
         if language == 'uz':
             dish_item = cart_str_item.format(name=cart_item.dish.get_full_name_uz(),
                                              count=cart_item.count,
-                                             price=_format_number(cart_item.dish.price),
-                                             sum=_format_number(cart_item.count * cart_item.dish.price))
+                                             price=_format_number(cart_item.dish.price * currency_value),
+                                             sum=_format_number(cart_item.count * cart_item.dish.price * currency_value))
         else:
             dish_item = cart_str_item.format(name=cart_item.dish.get_full_name(),
                                              count=cart_item.count,
-                                             price=_format_number(cart_item.dish.price),
-                                             sum=_format_number(cart_item.count * cart_item.dish.price))
+                                             price=_format_number(cart_item.dish.price * currency_value),
+                                             sum=_format_number(cart_item.count * cart_item.dish.price * currency_value))
         dish_item += " {}\n".format(get_string('sum', language))
         cart_contains += dish_item
     cart_contains += "\n<b>{}</b>: {} {}".format(get_string('cart.summary', language),
@@ -87,6 +88,7 @@ def from_order_payment_method(value: str, language: str) -> str:
 
 
 def from_order(order: Order, language: str, total: int) -> str:
+    currency_value = settings.get_currency_value()
     order_content = "<b>{}:</b>".format(get_string('your_order', language))
     order_content += '\n\n'
     order_content += '<b>{phone}:</b> {phone_value}\n'.format(phone=get_string('phone', language),
@@ -114,12 +116,12 @@ def from_order(order: Order, language: str, total: int) -> str:
             dish_name = dish.get_full_name()
         order_item_str = order_item_tmpl.format(name=dish_name,
                                                 count=order_item.count,
-                                                price=_format_number(dish.price),
-                                                sum=_format_number(order_item.count * dish.price),
+                                                price=_format_number(dish.price * currency_value),
+                                                sum=_format_number(order_item.count * dish.price * currency_value),
                                                 sum_str=get_string('sum', language))
         order_content += order_item_str
     order_content += "<b>{}</b>: {} {}".format(get_string('cart.summary', language),
-                                               _format_number(total),
+                                               _format_number(total * currency_value),
                                                get_string('sum', language))
     if not order.delivery_price and order.address_txt:
         order_content += '\n\n'
