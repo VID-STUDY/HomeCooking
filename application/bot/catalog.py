@@ -125,7 +125,7 @@ def catalog_processor(message: Message, **kwargs):
         if category.image_path or category.image_id:
             if category.image_path and not category.image_id:
                 try:
-                    image = open(category.image_id, 'rb')
+                    image = open(category.image_path, 'rb')
                 except FileNotFoundError:
                     bot.send_message(chat_id, message, reply_markup=keyboard)
                 else:
