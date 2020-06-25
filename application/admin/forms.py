@@ -47,9 +47,11 @@ class DishForm(FlaskForm):
         self.show_usd.data = dish.show_usd
 
     def validate_price(self, field):
-        if not field.data.isdigit():
+        try:
+            float(field.data)
+        except ValueError:
             raise ValidationError('Укажите числовое значение цены')
-        if int(field.data) <= 0:
+        if float(field.data) <= 0:
             raise ValidationError('Цена не может быть отрицательной или равной нулю')
 
 
