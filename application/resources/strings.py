@@ -48,7 +48,7 @@ def from_cart_items(cart_items, language, total) -> str:
         dish_item += " {}\n".format(get_string('sum', language))
         cart_contains += dish_item
     cart_contains += "\n<b>{}</b>: {} {}".format(get_string('cart.summary', language),
-                                                 _format_number(total),
+                                                 _format_number(total * currency_value),
                                                  get_string('sum', language))
 
     return cart_contains
