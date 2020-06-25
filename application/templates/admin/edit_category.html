@@ -27,6 +27,14 @@
                                 <span class="help-block">{{ error }}</span>
                             {% endfor %}
                         </div>
+                        <div class="form-group {% if form.image.errors|length > 0 %}has-error{% endif %}">
+                            {{ form.image.label }}
+                            {{ form.image }}
+                            <span class="help-block">Для изменения изображения загрузите новый файл, иначе оставьте это поле пустым</span>
+                            {% for error in form.image.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
                         <div class="form-group {% if form.parent.errors %} has-error{% endif %}">
                             {{ form.parent.label }}
                             {{ form.parent(class='form-control') }}

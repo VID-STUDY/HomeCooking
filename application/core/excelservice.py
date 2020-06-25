@@ -53,5 +53,8 @@ def _create_product(product_name, parent_category,
         product_price = float(product_price)
     else:
         product_price = 0.0
+    if category2 == 'Муфта':
+        print()
+        pass
     category = _create_category(category3, category2, category1, parent_category)
     dishservice.create_dish(product_name, product_name, product_description, product_description, str(image), product_price, category.id)

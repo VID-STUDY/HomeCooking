@@ -43,8 +43,9 @@ def edit_category(category_id: int):
     if form.validate_on_submit():
         name_ru = form.name_ru.data
         name_uz = form.name_uz.data
+        image = form.image.data
         parent_id = form.parent.data
-        dishservice.update_category(category_id, name_ru, name_uz, parent_id)
+        dishservice.update_category(category_id, name_ru, name_uz, parent_id, image)
         flash('Категория {} | {} изменена'.format(name_ru, name_uz), category='success')
         return redirect(url_for('admin.catalog'))
     category = dishservice.get_category_by_id(category_id)
@@ -64,8 +65,9 @@ def create_category():
     if form.validate_on_submit():
         name_ru = form.name_ru.data
         name_uz = form.name_uz.data
+        image = form.image.data
         parent_id = form.parent.data
-        dishservice.create_category(name_ru, name_uz, parent_id)
+        dishservice.create_category(name_ru, name_uz, parent_id, image)
         flash('Категория {} | {} добавлена'.format(name_ru, name_uz), category='success')
         return redirect(url_for('admin.catalog'))
     form.parent.data = 0

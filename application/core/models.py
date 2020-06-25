@@ -105,6 +105,8 @@ class DishCategory(db.Model, BaseNestedSets):
     name = db.Column(db.String(100))
     name_uz = db.Column(db.String(100))
     number = db.Column(db.Integer, default=1)
+    image_id = db.Column(db.String(150))
+    image_path = db.Column(db.String(150))
     dishes = db.relationship('Dish', lazy='dynamic', backref='category')
 
     def get_nested_names(self):
@@ -140,6 +142,7 @@ class Dish(db.Model):
     image_path = db.Column(db.String(150))
     description = db.Column(db.String(500))
     description_uz = db.Column(db.String(500))
+    show_usd = db.Column(db.Boolean, default=False)
     is_hidden = db.Column(db.Boolean, default=False)
     price = db.Column(db.Float)
     number = db.Column(db.Integer, default=1)

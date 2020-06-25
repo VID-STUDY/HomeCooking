@@ -25,21 +25,32 @@ def get_category_by_id(category_id) -> DishCategory:
     return DishCategory.query.get_or_404(category_id)
 
 
-def update_category(category_id: int, name_ru: str, name_uz:str, parent_id=0):
+def update_category(category_id: int, name_ru: str, name_uz: str, parent_id=0, image=None):
     if parent_id == 0:
         parent_id = None
     category = DishCategory.query.get_or_404(category_id)
     category.name = name_ru
     category.name_uz = name_uz
     category.parent_id = parent_id
+    if image and image.filename != '':
+        if category.image_path:
+            files.remove_file(category.image_path)
+        file_path = os.path.join(Config.UPLOAD_DIRECTORY, image.filename)
+        files.save_file(image, file_path)
+        category.image_id = None
+        category.image_path = file_path
     db.session.commit()
     return category
 
 
-def create_category(name_ru: str, name_uz: str, parent_id=0) -> DishCategory:
+def create_category(name_ru: str, name_uz: str, parent_id=0, image=None) -> DishCategory:
     if parent_id == 0:
         parent_id = None
     category = DishCategory(name=name_ru, name_uz=name_uz, parent_id=parent_id)
+    if image and image.filename != '':
+        file_path = os.path.join(Config.UPLOAD_DIRECTORY, image.filename)
+        files.save_file(image, file_path, recreate=True)
+        category.image_path = file_path
     db.session.add(category)
     db.session.commit()
     return category
@@ -172,4 +183,9 @@ def get_dish_by_name(name: str, language: str, category: DishCategory = None) ->
 
 def set_dish_image_id(dish: Dish, image_id: str):
     dish.image_id = image_id
+    db.session.commit()
+
+
+def set_category_image_id(category: DishCategory, image_id: str):
+    category.image_id = image_id
     db.session.commit()
